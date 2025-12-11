@@ -1,0 +1,43 @@
+---
+const { title, price, image, rating = 0, reviews = 0, description } = Astro.props;
+---
+<article
+  class="bg-white mb-4 border border-gray-200 rounded-xl p-4 w-full flex flex-col justify-between transition-transform hover:scale-105 duration-300"
+>
+  <div class="flex flex-col items-center text-center">
+    <img
+      src={image}
+      alt={title}
+      class="rounded-lg object-cover h-60 w-auto aspect-square mb-3"
+    />
+
+    <h3 class="text-lg font-medium mb-1">{title}</h3>
+    <p class="text-sm text-gray-500 mb-3 line-clamp-2">{description}</p>
+    
+    <!-- Estrellas de valoración estilo Amazon -->
+    <div class="flex items-center gap-1 mb-2">
+      <div class="flex text-yellow-400">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={i < Math.floor(rating) ? "currentColor" : "none"} stroke="currentColor" stroke-width="1.5" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.545.044.77.77.326 1.163l-4.304 3.86a.562.562 0 00-.182.557l1.285 5.385a.562.562 0 01-.811.613L12 18.202l-4.605 2.682a.562.562 0 01-.811-.613l1.285-5.385a.562.562 0 00-.182-.557l-4.304-3.86a.562.562 0 01.326-1.163l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+          </svg>
+        ))}
+      </div>
+      <span class="text-xs text-blue-600 hover:underline cursor-pointer">{reviews}</span>
+    </div>
+
+    <p class="text-gray-900 font-bold text-xl mb-4">
+      ${price}
+    </p>
+  </div>
+
+  <!-- Botones de acción -->
+  <div class="flex flex-col gap-2 w-full">
+    <button class="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-medium py-2 px-4 rounded-full text-sm shadow-sm transition-colors">
+      Añadir al carrito
+    </button>
+    <!-- <button class="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-full text-sm shadow-sm transition-colors">
+      Comprar ya
+    </button> -->
+  </div>
+</article>
