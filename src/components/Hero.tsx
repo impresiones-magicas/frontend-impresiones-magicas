@@ -19,7 +19,7 @@ const Hero = () => {
                 <h3 className="text-xs lg:text-sm font-bold tracking-[0.2em] uppercase text-gray-500 mb-4 animate-[fadeInUp_0.8s_ease-out_forwards]">
                     Impresiones Mágicas
                 </h3>
-                <h1 className="text-5xl lg:text-8xl font-serif font-medium text-gray-900 mb-6 lg:mb-8 leading-tight animate-[fadeInUp_0.8s_ease-out_0.1s_forwards] opacity-0">
+                <h1 className="text-5xl lg:text-7xl font-serif font-medium text-gray-900 mb-6 lg:mb-8 leading-tight animate-[fadeInUp_0.8s_ease-out_0.1s_forwards] opacity-0">
                     Personaliza<br />
                     <span className="text-blue-600">lo que</span><br />
                     quieras!
