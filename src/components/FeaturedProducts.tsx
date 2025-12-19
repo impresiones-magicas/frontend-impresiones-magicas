@@ -7,7 +7,7 @@ const FeaturedProducts = () => {
     const featuredProducts = productsData.filter(p => p.featured);
 
     return (
-        <section className="max-w-8xl px-4 py-6">
+        <section className="max-w-8xl px-4 pt-6">
             <h2 className="m-4 text-2xl font-semibold mb-6">Productos Destacados</h2>
 
             <div

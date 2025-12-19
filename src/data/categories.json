@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "name": "Tarjetas de Visita",
+    "image": "/img/foto.jpg",
+    "description": "Tarjetas profesionales de alta calidad para tu negocio.",
+    "featured": true,
+    "productCount": 45
+  },
+  {
+    "id": 2,
+    "name": "Flyers y Folletos",
+    "image": "/img/foto.jpg",
+    "description": "Promociona tus eventos y servicios con diseños impactantes.",
+    "featured": true,
+    "productCount": 32
+  },
+  {
+    "id": 3,
+    "name": "Banners y Lonas",
+    "image": "/img/foto.jpg",
+    "description": "Impresiones de gran formato para publicidad exterior.",
+    "featured": true,
+    "productCount": 28
+  },
+  {
+    "id": 4,
+    "name": "Invitaciones",
+    "image": "/img/foto.jpg",
+    "description": "Diseños personalizados para tus eventos especiales.",
+    "featured": true,
+    "productCount": 56
+  }
+]
