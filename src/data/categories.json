@@ -1,34 +1,34 @@
 [
   {
     "id": 1,
-    "name": "Tarjetas de Visita",
-    "image": "/img/foto.jpg",
-    "description": "Tarjetas profesionales de alta calidad para tu negocio.",
+    "name": "Camisetas",
+    "image": "/img/camisetas.png",
+    "description": "Camisetas personalizadas con tu diseño.",
     "featured": true,
-    "productCount": 45
+    "productCount": 120
   },
   {
     "id": 2,
-    "name": "Flyers y Folletos",
-    "image": "/img/foto.jpg",
-    "description": "Promociona tus eventos y servicios con diseños impactantes.",
+    "name": "Sudaderas",
+    "image": "/img/sudaderas.png",
+    "description": "Sudaderas con capucha y sin capucha personalizables.",
     "featured": true,
-    "productCount": 32
+    "productCount": 85
   },
   {
     "id": 3,
-    "name": "Banners y Lonas",
+    "name": "Tazas",
     "image": "/img/foto.jpg",
-    "description": "Impresiones de gran formato para publicidad exterior.",
+    "description": "Tazas personalizadas para regalar o promocionar.",
     "featured": true,
-    "productCount": 28
+    "productCount": 95
   },
   {
     "id": 4,
-    "name": "Invitaciones",
+    "name": "Gorras",
     "image": "/img/foto.jpg",
-    "description": "Diseños personalizados para tus eventos especiales.",
+    "description": "Gorras bordadas o estampadas con tu logo.",
     "featured": true,
-    "productCount": 56
+    "productCount": 67
   }
 ]
