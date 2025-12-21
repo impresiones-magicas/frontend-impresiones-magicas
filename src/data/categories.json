@@ -30,5 +30,69 @@
     "description": "Gorras bordadas o estampadas con tu logo.",
     "featured": true,
     "productCount": 67
+  },
+  {
+    "id": 5,
+    "name": "Bolsas",
+    "image": "/img/foto.jpg",
+    "description": "Bolsas de tela personalizadas ecológicas.",
+    "featured": true,
+    "productCount": 54
+  },
+  {
+    "id": 6,
+    "name": "Polos",
+    "image": "/img/foto.jpg",
+    "description": "Polos bordados para empresas y eventos.",
+    "featured": true,
+    "productCount": 43
+  },
+  {
+    "id": 7,
+    "name": "Chalecos",
+    "image": "/img/foto.jpg",
+    "description": "Chalecos personalizados para uniformes.",
+    "featured": true,
+    "productCount": 28
+  },
+  {
+    "id": 8,
+    "name": "Delantales",
+    "image": "/img/foto.jpg",
+    "description": "Delantales para hostelería y cocina.",
+    "featured": true,
+    "productCount": 36
+  },
+  {
+    "id": 9,
+    "name": "Mochilas",
+    "image": "/img/foto.jpg",
+    "description": "Mochilas personalizadas para promociones.",
+    "featured": true,
+    "productCount": 41
+  },
+  {
+    "id": 10,
+    "name": "Llaveros",
+    "image": "/img/foto.jpg",
+    "description": "Llaveros personalizados para merchandising.",
+    "featured": true,
+    "productCount": 89
+  },
+  {
+    "id": 11,
+    "name": "Libretas",
+    "image": "/img/foto.jpg",
+    "description": "Libretas y cuadernos personalizados.",
+    "featured": true,
+    "productCount": 52
+  },
+  {
+    "id": 12,
+    "name": "Bolígrafos",
+    "image": "/img/foto.jpg",
+    "description": "Bolígrafos con tu logo para eventos.",
+    "featured": true,
+    "productCount": 156
   }
 ]
