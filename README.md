@@ -34,3 +34,22 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Project Structure
+
+This project follows a scalable folder structure designed for Next.js applications:
+
+- **src/app**: Contains the App Router pages and layouts. This is the main entry point for routes.
+- **src/components**: Stores all React components.
+  - **ui**: Generic, reusable components (Buttons, Inputs, Cards).
+  - **layout**: Structural components (Header, Footer, Sidebar).
+  - **features**: Business-specific components (e.g., ProductList, UserProfile).
+- **src/services**: Handles external API interactions.
+  - **api.ts**: Centralized API client wrapper.
+  - **config.ts**: Environment variables and configuration constants.
+- **src/hooks**: Custom React hooks (e.g., useFetch, useAuth).
+- **src/context**: React Context providers for global state management.
+- **src/utils**: Utility functions and helpers.
+- **src/types**: TypeScript interfaces and types shared across the application.
+- **src/assets**: Static assets such as images, icons, and fonts.
+- **src/styles**: Global styles and CSS modules.

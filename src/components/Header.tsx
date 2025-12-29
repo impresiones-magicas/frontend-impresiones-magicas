@@ -7,16 +7,16 @@ const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
-        <header className="w-full bg-white border-b relative z-50">
+        <header className="w-full bg-white border-b relative z-50 overflow-x-hidden max-w-[100vw]">
             {/* Top Bar */}
             <div className="border-b">
-                <div className="w-full px-6 md:px-12 flex items-center justify-between py-4 gap-8">
+                <div className="w-full px-4 md:px-12 flex items-center justify-between py-4 gap-4 md:gap-8">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 shrink-0">
-                        <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                        <div className="hidden md:flex w-10 h-10 bg-blue-600 rounded-full items-center justify-center text-white font-bold shrink-0">
                             IM
                         </div>
-                        <span className="font-bold text-xl text-gray-900 tracking-tight">
+                        <span className="font-bold text-lg md:text-xl text-gray-900 tracking-tight block">
                             Impresiones Mágicas
                         </span>
                     </Link>
@@ -49,7 +49,7 @@ const Header = () => {
                     </div>
 
                     {/* Auth Buttons */}
-                    <div className="flex items-center gap-2 md:gap-4 shrink-0">
+                    <div className="flex items-center gap-1 md:gap-4 shrink-0">
                         <button className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors cursor-pointer">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"

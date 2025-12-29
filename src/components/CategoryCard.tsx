@@ -20,7 +20,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     <Link href={`/categories/${id}`} className="flex flex-col items-center group">
       <div className="relative mb-3">
         {/* Círculo con imagen de fondo */}
-        <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full overflow-hidden transition-transform group-hover:scale-105 duration-300 shadow-md">
+        <div className="w-32 h-32 sm:w-40 sm:h-40 md:w-52 md:h-52 rounded-full overflow-hidden transition-transform group-hover:scale-105 duration-300 shadow-lg hover:shadow-xl">
           <img
             src={image}
             alt={name}
@@ -28,7 +28,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
           />
         </div>
       </div>
-      
+
       <h3 className="text-sm font-medium text-center text-gray-900 group-hover:text-blue-600 transition-colors px-2">
         {name}
       </h3>

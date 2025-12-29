@@ -10,9 +10,11 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <Hero />
-      <FeaturedProducts />
-      <FeaturedCategories />
+      <main className="flex-1 w-full max-w-[100vw] overflow-x-hidden">
+        <Hero />
+        <FeaturedProducts />
+        <FeaturedCategories />
+      </main>
       <Footer />
     </div>
   );
