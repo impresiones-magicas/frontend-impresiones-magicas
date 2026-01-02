@@ -2,12 +2,36 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { LogOut, User as UserIcon, Package, AlertTriangle } from 'lucide-react';
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { user, logout } = useAuth();
+
 
     return (
-        <header className="w-full bg-white border-b relative z-50 overflow-x-hidden max-w-[100vw]">
+        <header className="w-full bg-white border-b relative z-50">
             {/* Top Bar */}
             <div className="border-b">
                 <div className="w-full px-4 md:px-12 flex items-center justify-between py-4 gap-4 md:gap-8">
@@ -72,31 +96,93 @@ const Header = () => {
 
                         <div className="hidden md:block h-6 w-px bg-gray-200"></div>
 
-                        <button className="hidden md:block px-4 py-2 text-gray-700 font-medium hover:text-blue-600 transition-colors cursor-pointer">
-                            Iniciar Sesión
-                        </button>
+                        {user ? (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="outline-none">
+                                    <Avatar className="h-9 w-9 border-2 border-white shadow-sm cursor-pointer hover:opacity-90 transition-opacity">
+                                        <AvatarImage src={user.avatarUrl} alt={user.email} />
+                                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-medium">
+                                            {user.name ? user.name.substring(0, 2).toUpperCase() : user.email.substring(0, 2).toUpperCase()}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56">
+                                    <DropdownMenuLabel>
+                                        <div className="flex flex-col space-y-1">
+                                            <p className="text-sm font-medium leading-none">{user.name || "Usuario"}</p>
+                                            <p className="text-xs leading-none text-muted-foreground font-normal">
+                                                {user.email}
+                                            </p>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem className="cursor-pointer">
+                                        <UserIcon className="mr-2 h-4 w-4" />
+                                        <span>Perfil</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className="cursor-pointer">
+                                        <Package className="mr-2 h-4 w-4" />
+                                        <span>Mis Pedidos</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuSeparator />
 
-                        {/* Mobile User Icon */}
-                        <button className="md:hidden p-2 text-gray-700 cursor-pointer">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                ></path>
-                            </svg>
-                        </button>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50" onSelect={(e) => e.preventDefault()}>
+                                                <LogOut className="mr-2 h-4 w-4" />
+                                                <span>Cerrar Sesión</span>
+                                            </DropdownMenuItem>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent className="border-red-200">
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+                                                    <AlertTriangle className="h-5 w-5" />
+                                                    ¿Cerrar sesión?
+                                                </AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    ¿Estás seguro de que quieres cerrar tu sesión actual? Tendrás que volver a iniciar sesión para acceder a tu cuenta.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                <AlertDialogAction onClick={logout} className="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">
+                                                    Cerrar Sesión
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        ) : (
+                            <>
+                                <Link href="/login" className="hidden md:block px-4 py-2 text-gray-700 font-medium hover:text-blue-600 transition-colors cursor-pointer">
+                                    Iniciar Sesión
+                                </Link>
 
-                        <button className="hidden md:block bg-black text-white px-5 py-2.5 rounded-full font-medium hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer">
-                            Registrarse
-                        </button>
+                                {/* Mobile User Icon (Link to login if not logged in) */}
+                                <Link href="/login" className="md:hidden p-2 text-gray-700 cursor-pointer">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-6 w-6"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                        ></path>
+                                    </svg>
+                                </Link>
+
+                                <Link href="/register" className="hidden md:block bg-black text-white px-5 py-2.5 rounded-full font-medium hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer">
+                                    Registrarse
+                                </Link>
+                            </>
+                        )}
 
                         {/* Mobile Menu Button */}
                         <button
@@ -226,10 +312,10 @@ const Header = () => {
                             Ofertas
                         </Link>
                         <hr className="my-2 border-gray-200" />
-                        <Link href="#" className="py-3 px-4 hover:bg-gray-100 rounded-lg font-medium text-blue-600">
+                        <Link href="/login" className="py-3 px-4 hover:bg-gray-100 rounded-lg font-medium text-blue-600">
                             Iniciar Sesión
                         </Link>
-                        <Link href="#" className="py-3 px-4 bg-black text-white rounded-lg font-medium text-center mt-2">
+                        <Link href="/register" className="py-3 px-4 bg-black text-white rounded-lg font-medium text-center mt-2">
                             Registrarse
                         </Link>
                     </nav>

@@ -28,7 +28,7 @@ const Hero = () => {
                     Diseños únicos para productos únicos. Tu imaginación es el límite.
                 </p>
                 <Link
-                    href="#"
+                    href="/register"
                     className="bg-gray-900 text-white px-8 py-4 rounded-full font-medium flex items-center gap-2 hover:bg-gray-800 transition-all hover:scale-105 shadow-lg animate-[fadeInUp_0.8s_ease-out_0.3s_forwards] opacity-0"
                 >
                     Empezar a Crear

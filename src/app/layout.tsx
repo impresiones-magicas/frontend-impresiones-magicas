@@ -1,6 +1,8 @@
 
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,7 +36,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} antialiased overflow-x-hidden`}
       >
-        {children}
+        <AuthProvider>
+          {children}
+          <Toaster
+            toastOptions={{
+              classNames: {
+                error: 'group-[.toaster]:!bg-white group-[.toaster]:!text-red-600 group-[.toaster]:!border-red-200 group-[.toaster]:!border-2 !shadow-lg',
+                success: 'group-[.toaster]:!bg-white group-[.toaster]:!text-green-600 group-[.toaster]:!border-green-200 group-[.toaster]:!border-2 !shadow-lg',
+                warning: 'group-[.toaster]:!bg-white group-[.toaster]:!text-yellow-600 group-[.toaster]:!border-yellow-200 group-[.toaster]:!border-2 !shadow-lg',
+                info: 'group-[.toaster]:!bg-white group-[.toaster]:!text-blue-600 group-[.toaster]:!border-blue-200 group-[.toaster]:!border-2 !shadow-lg',
+                description: '!text-black !text-opacity-100',
+              },
+            }}
+          />
+        </AuthProvider>
       </body>
     </html>
   );
