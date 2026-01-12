@@ -53,7 +53,12 @@ export default function LoginPage() {
             toast.success("Login correcto", {
                 description: "Bienvenido de nuevo.",
             });
-            router.push("/");
+
+            if (response.user.role === 'admin') {
+                router.push("/admin/dashboard");
+            } else {
+                router.push("/");
+            }
         } catch (error: unknown) {
             console.error(error);
             const errorMessage = error instanceof Error ? error.message : "Ha ocurrido un error inesperado.";

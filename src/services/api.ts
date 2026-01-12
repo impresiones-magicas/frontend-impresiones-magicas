@@ -1,62 +1,74 @@
 import { config } from './config';
+import { Category, Product } from '@/types';
 
-export interface Category {
-    id: string;
-    name: string;
-    description?: string;
-    imageUrl?: string;
-    isFeatured: boolean;
-    children?: Category[];
-    parent?: Category;
-}
+export const api = {
+    get: async <T>(url: string): Promise<{ data: T }> => {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const response = await fetch(`${config.apiUrl}${url}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        return { data: await response.json() };
+    },
 
-export interface Product {
-    id: string;
-    name: string;
-    description?: string;
-    price: number;
-    stock: number;
-    isFeatured: boolean;
-    images: { id: string; url: string }[];
-    slug?: string;
-    category?: Category;
-}
+    post: async <T>(url: string, body: any): Promise<{ data: T }> => {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const response = await fetch(`${config.apiUrl}${url}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(body),
+        });
+        if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        return { data: await response.json() };
+    },
+
+    patch: async <T>(url: string, body: any): Promise<{ data: T }> => {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const response = await fetch(`${config.apiUrl}${url}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(body),
+        });
+        if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        return { data: await response.json() };
+    },
+
+    delete: async <T>(url: string): Promise<{ data: T }> => {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const response = await fetch(`${config.apiUrl}${url}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        return { data: await response.json() };
+    }
+};
 
 export const fetchCategories = async (): Promise<Category[]> => {
-    try {
-        const response = await fetch(`${config.apiUrl}/categories`);
-        if (!response.ok) throw new Error('Failed to fetch categories');
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching categories:', error);
-        return [];
-    }
+    const { data } = await api.get<Category[]>('/categories');
+    return data;
 };
 
 export const fetchProduct = async (term: string): Promise<Product | null> => {
     try {
-        const url = `${config.apiUrl}/products/${term}`;
-        console.log(`Fetching product from: ${url}`);
-        const response = await fetch(url);
-        console.log(`Response status for ${term}:`, response.status);
-        if (!response.ok) {
-            console.error(`Failed to fetch product: ${response.status} ${response.statusText}`);
-            return null;
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching product:', error);
+        const { data } = await api.get<Product>(`/products/${term}`);
+        return data;
+    } catch {
         return null;
     }
 };
 
 export const fetchProducts = async (): Promise<Product[]> => {
-    try {
-        const response = await fetch(`${config.apiUrl}/products`);
-        if (!response.ok) throw new Error('Failed to fetch products');
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching products:', error);
-        return [];
-    }
+    const { data } = await api.get<Product[]>('/products');
+    return data;
 };

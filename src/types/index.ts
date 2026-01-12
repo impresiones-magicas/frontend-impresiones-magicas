@@ -1,0 +1,42 @@
+export interface User {
+    id: string;
+    email: string;
+    name?: string;
+    role: 'admin' | 'user';
+    avatarUrl?: string;
+    lastPasswordChangeDate?: string;
+    isPasswordExpired?: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Category {
+    id: string;
+    name: string;
+    description?: string;
+    imageUrl?: string;
+    isFeatured: boolean;
+    children?: Category[];
+    parent?: Category;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface ProductImage {
+    id: string;
+    url: string;
+}
+
+export interface Product {
+    id: string;
+    name: string;
+    description?: string;
+    price: number;
+    stock: number;
+    isFeatured: boolean;
+    images: ProductImage[];
+    slug?: string;
+    category?: Category;
+    createdAt?: string;
+    updatedAt?: string;
+}

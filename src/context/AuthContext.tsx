@@ -4,17 +4,12 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
-interface User {
-    id: string;
-    email: string;
-    role: string;
-    avatarUrl?: string;
-    name?: string;
-}
+import { User } from '@/types';
 
 interface AuthContextType {
     user: User | null;
     token: string | null;
+    loading: boolean;
     login: (token: string, user: User) => void;
     logout: () => void;
     isAuthenticated: boolean;
@@ -25,6 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
@@ -40,7 +36,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 console.error("Failed to parse user from local storage", e);
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
+            } finally {
+                setLoading(false);
             }
+        } else {
+            setLoading(false);
         }
     }, []);
 
@@ -66,6 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         <AuthContext.Provider value={{
             user,
             token,
+            loading,
             login,
             logout,
             isAuthenticated: !!user
