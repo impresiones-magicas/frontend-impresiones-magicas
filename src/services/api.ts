@@ -1,61 +1,62 @@
 import { config } from './config';
 
-export const api = {
-    get: async <T>(endpoint: string, headers?: HeadersInit): Promise<T> => {
-        const response = await fetch(`${config.apiUrl}${endpoint}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                ...headers,
-            },
-        });
-        if (!response.ok) {
-            throw new Error(`API Error: ${response.statusText}`);
-        }
-        return response.json();
-    },
+export interface Category {
+    id: string;
+    name: string;
+    description?: string;
+    imageUrl?: string;
+    isFeatured: boolean;
+    children?: Category[];
+    parent?: Category;
+}
 
-    post: async <T>(endpoint: string, body: any, headers?: HeadersInit): Promise<T> => {
-        const response = await fetch(`${config.apiUrl}${endpoint}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...headers,
-            },
-            body: JSON.stringify(body),
-        });
-        if (!response.ok) {
-            throw new Error(`API Error: ${response.statusText}`);
-        }
-        return response.json();
-    },
+export interface Product {
+    id: string;
+    name: string;
+    description?: string;
+    price: number;
+    stock: number;
+    isFeatured: boolean;
+    images: { id: string; url: string }[];
+    slug?: string;
+    category?: Category;
+}
 
-    put: async <T>(endpoint: string, body: any, headers?: HeadersInit): Promise<T> => {
-        const response = await fetch(`${config.apiUrl}${endpoint}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                ...headers,
-            },
-            body: JSON.stringify(body),
-        });
-        if (!response.ok) {
-            throw new Error(`API Error: ${response.statusText}`);
-        }
-        return response.json();
-    },
+export const fetchCategories = async (): Promise<Category[]> => {
+    try {
+        const response = await fetch(`${config.apiUrl}/categories`);
+        if (!response.ok) throw new Error('Failed to fetch categories');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        return [];
+    }
+};
 
-    delete: async <T>(endpoint: string, headers?: HeadersInit): Promise<T> => {
-        const response = await fetch(`${config.apiUrl}${endpoint}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                ...headers,
-            },
-        });
+export const fetchProduct = async (term: string): Promise<Product | null> => {
+    try {
+        const url = `${config.apiUrl}/products/${term}`;
+        console.log(`Fetching product from: ${url}`);
+        const response = await fetch(url);
+        console.log(`Response status for ${term}:`, response.status);
         if (!response.ok) {
-            throw new Error(`API Error: ${response.statusText}`);
+            console.error(`Failed to fetch product: ${response.status} ${response.statusText}`);
+            return null;
         }
-        return response.json();
-    },
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        return null;
+    }
+};
+
+export const fetchProducts = async (): Promise<Product[]> => {
+    try {
+        const response = await fetch(`${config.apiUrl}/products`);
+        if (!response.ok) throw new Error('Failed to fetch products');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        return [];
+    }
 };

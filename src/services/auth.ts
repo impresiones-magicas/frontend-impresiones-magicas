@@ -1,4 +1,4 @@
-import { api } from './api';
+import { config } from './config';
 
 export interface LoginRequest {
     email: string;
@@ -21,6 +21,22 @@ export interface RegisterRequest {
     email: string;
     pass: string;
     role: string;
+}
+
+const api = {
+    post: async <T>(url: string, body: any): Promise<T> => {
+        const response = await fetch(`${config.apiUrl}${url}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+        });
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.statusText}`);
+        }
+        return response.json();
+    }
 }
 
 export const authService = {

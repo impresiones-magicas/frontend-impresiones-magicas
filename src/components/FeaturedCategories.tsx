@@ -2,15 +2,30 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import CategoryCard from './CategoryCard';
-import categoriesData from '@/data/categories.json';
+import { fetchCategories, Category } from '@/services/api';
 
 const FeaturedCategories = () => {
-    // Show all featured categories or a multiple of 6 if we want strict paging, 
-    // but user just asked for "scroll 6 at a time".
-    const featuredCategories = categoriesData.filter(c => c.featured);
+    const [featuredCategories, setFeaturedCategories] = useState<Category[]>([]);
+    const [loading, setLoading] = useState(true);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
-    const [canScrollRight, setCanScrollRight] = useState(true);
+    const [canScrollRight, setCanScrollRight] = useState(false); // Default to false until data loads
+
+    useEffect(() => {
+        const loadCategories = async () => {
+            try {
+                const data = await fetchCategories();
+                // Filter only featured categories that are top-level (if logic dictates) or just any featured
+                // Based on header logic, featured ones were top level. Let's stick to that or just isFeatured.
+                setFeaturedCategories(data.filter(c => c.isFeatured));
+            } catch (error) {
+                console.error("Failed to load categories", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadCategories();
+    }, []);
 
     const checkScroll = () => {
         if (scrollContainerRef.current) {
@@ -27,6 +42,8 @@ const FeaturedCategories = () => {
         if (container) {
             container.addEventListener('scroll', checkScroll);
             window.addEventListener('resize', checkScroll);
+            // Check immediately after data update often helpful
+            setTimeout(checkScroll, 100);
         }
         return () => {
             if (container) {
@@ -34,7 +51,7 @@ const FeaturedCategories = () => {
             }
             window.removeEventListener('resize', checkScroll);
         };
-    }, []);
+    }, [featuredCategories]); // Re-run when categories change
 
     const scroll = (direction: 'left' | 'right') => {
         if (scrollContainerRef.current) {
@@ -51,6 +68,9 @@ const FeaturedCategories = () => {
             });
         }
     };
+
+    if (loading) return <div className="p-8 text-center text-gray-500">Cargando categorías...</div>;
+    if (featuredCategories.length === 0) return null;
 
     return (
         <section className="w-full max-w-[100vw] py-8 bg-white overflow-hidden">
@@ -120,7 +140,13 @@ const FeaturedCategories = () => {
                             key={category.id}
                             className="flex-shrink-0 snap-start w-1/2 sm:w-1/3 lg:w-1/6 px-2"
                         >
-                            <CategoryCard {...category} />
+                            <CategoryCard
+                                id={category.id}
+                                name={category.name}
+                                description={category.description || ''}
+                                image={category.imageUrl || '/placeholder-category.png'} // Fallback
+                                featured={category.isFeatured}
+                            />
                         </div>
                     ))}
                 </div>

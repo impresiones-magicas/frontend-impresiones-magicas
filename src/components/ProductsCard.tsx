@@ -9,8 +9,9 @@ interface ProductCardProps {
   rating?: number;
   reviews?: number;
   description: string;
-  id?: number;
+  id?: string | number;
   featured?: boolean;
+  slug?: string;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -20,12 +21,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
   rating = 0,
   reviews = 0,
   description,
-  id
+  id,
+  slug
 }) => {
   return (
     <article className="bg-white mb-4 border border-gray-200 rounded-xl p-4 w-full flex flex-col justify-between transition-transform hover:scale-105 duration-300">
       <div className="flex flex-col items-center text-center">
-        <Link href={`/products/${id}`} className="w-full flex flex-col items-center group">
+        <Link href={`/products/${slug || id}`} className="w-full flex flex-col items-center group">
           <img
             src={image}
             alt={title}

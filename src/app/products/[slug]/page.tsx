@@ -1,34 +1,36 @@
 
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import productsData from '@/data/products.json';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { fetchProduct, fetchProducts, Product } from '@/services/api';
 
 // Generate static params for all products (SSG)
 export async function generateStaticParams() {
-    return productsData.map((product) => ({
-        id: product.id.toString(),
+    const products = await fetchProducts();
+    // Return params for paths that have a slug or id (fallback)
+    return products.map((product) => ({
+        slug: product.slug || product.id,
     }));
 }
 
 export default async function ProductPage({
     params,
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ slug: string }>;
 }) {
-    const { id } = await params;
-    const product = productsData.find((p) => p.id.toString() === id);
+    const { slug } = await params;
+    const product = await fetchProduct(slug);
 
     if (!product) {
         notFound();
     }
 
-    // Find related products (simple logic: same items excluding current one, take 4)
-    const relatedProducts = productsData
-        .filter((p) => p.id.toString() !== id)
+    // Find related products by category
+    const allProducts = await fetchProducts();
+    const relatedProducts = allProducts
+        .filter((p) => p.id !== product.id && (product.category ? p.category?.id === product.category.id : true))
         .slice(0, 4);
 
     return (
@@ -43,7 +45,19 @@ export default async function ProductPage({
                             Inicio
                         </Link>
                         <span className="mx-2">/</span>
-                        <span className="text-gray-900 font-medium">{product.title}</span>
+                        <Link href="/categories" className="hover:text-gray-900 transition-colors">
+                            Categorías
+                        </Link>
+                        {product.category && (
+                            <>
+                                <span className="mx-2">/</span>
+                                <Link href={`/categories/${product.category.id}`} className="hover:text-gray-900 transition-colors">
+                                    {product.category.name}
+                                </Link>
+                            </>
+                        )}
+                        <span className="mx-2">/</span>
+                        <span className="text-gray-900 font-medium">{product.name}</span>
                     </nav>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
@@ -52,8 +66,8 @@ export default async function ProductPage({
                             <div className="relative w-full aspect-square max-w-[300px] lg:max-w-md mx-auto">
                                 {/* Using standard img for simplicity matching original, ideally Next/Image */}
                                 <img
-                                    src={product.image}
-                                    alt={product.title}
+                                    src={product.images && product.images.length > 0 ? product.images[0].url : '/taza.png'}
+                                    alt={product.name}
                                     className="w-full h-full object-contain hover:scale-105 transition-transform duration-500"
                                 />
                             </div>
@@ -62,7 +76,7 @@ export default async function ProductPage({
                         {/* Right Column: details */}
                         <div className="flex flex-col">
                             <h1 className="text-3xl lg:text-5xl font-serif font-bold text-gray-900 mb-2 lg:mb-4 leading-tight">
-                                {product.title}
+                                {product.name}
                             </h1>
 
                             <div className="flex items-center gap-4 mb-6">
@@ -72,7 +86,7 @@ export default async function ProductPage({
                                             key={i}
                                             xmlns="http://www.w3.org/2000/svg"
                                             viewBox="0 0 24 24"
-                                            fill={i < Math.floor(product.rating || 0) ? "currentColor" : "none"}
+                                            fill={i < 5 ? "currentColor" : "none"} // Static 5 star for now
                                             stroke="currentColor"
                                             strokeWidth="1.5"
                                             className="w-5 h-5"
@@ -86,7 +100,7 @@ export default async function ProductPage({
                                     ))}
                                 </div>
                                 <span className="text-sm text-gray-500">
-                                    ({product.reviews || 0} valoraciones)
+                                    (0 valoraciones)
                                 </span>
                             </div>
 
@@ -101,6 +115,29 @@ export default async function ProductPage({
                                     Personalización disponible bajo pedido.
                                 </p>
                             </div>
+
+                            {/* Category Tags */}
+                            {product.category && (
+                                <div className="flex flex-wrap gap-2 mb-8">
+                                    <span className="text-gray-500 text-sm font-medium mr-2 self-center">Categorías:</span>
+                                    {/* Parent Category if exists (we might need to fetch it or if it's nested in response) */}
+                                    {/* Assuming API returns populated category.parent if available, otherwise just current category */}
+                                    {product.category.parent && (
+                                        <Link
+                                            href={`/categories/${product.category.parent.id}`}
+                                            className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors"
+                                        >
+                                            {product.category.parent.name}
+                                        </Link>
+                                    )}
+                                    <Link
+                                        href={`/categories/${product.category.id}`}
+                                        className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors"
+                                    >
+                                        {product.category.name}
+                                    </Link>
+                                </div>
+                            )}
 
                             {/* Actions */}
                             <div className="flex flex-col sm:flex-row gap-4 mb-10">
@@ -136,11 +173,11 @@ export default async function ProductPage({
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {relatedProducts.map((p) => (
-                                <Link href={`/products/${p.id}`} key={p.id} className="group bg-white border border-gray-100 rounded-xl p-4 hover:shadow-lg transition-all duration-300 flex flex-col">
+                                <Link href={`/products/${p.slug || p.id}`} key={p.id} className="group bg-white border border-gray-100 rounded-xl p-4 hover:shadow-lg transition-all duration-300 flex flex-col">
                                     <div className="aspect-square rounded-lg bg-gray-50 mb-4 overflow-hidden relative">
-                                        <img src={p.image} alt={p.title} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500" />
+                                        <img src={p.images && p.images.length > 0 ? p.images[0].url : '/taza.png'} alt={p.name} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500" />
                                     </div>
-                                    <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors mb-2">{p.title}</h3>
+                                    <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors mb-2">{p.name}</h3>
                                     <p className="font-bold text-gray-900 mt-auto">${p.price}</p>
                                 </Link>
                             ))}

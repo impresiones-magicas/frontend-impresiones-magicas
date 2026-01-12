@@ -6,7 +6,7 @@ interface CategoryCardProps {
   name: string;
   image: string;
   description: string;
-  id?: number;
+  id?: string | number;
   featured?: boolean;
   productCount?: number;
 }

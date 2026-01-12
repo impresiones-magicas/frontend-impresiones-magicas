@@ -24,11 +24,25 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { LogOut, User as UserIcon, Package, AlertTriangle } from 'lucide-react';
+import { fetchCategories, Category } from '@/services/api';
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { user, logout } = useAuth();
+    const [categories, setCategories] = useState<Category[]>([]);
 
+    React.useEffect(() => {
+        const loadCategories = async () => {
+            // Dynamically import to avoid server-side issues if any, or just standard import
+            const data = await fetchCategories();
+            setCategories(data);
+        };
+        loadCategories();
+    }, []);
+
+    // Filter featured and normal categories
+    const featuredCategories = categories.filter(c => c.isFeatured && !c.parent); // Top level featured
+    const productCategories = categories.filter(c => !c.isFeatured && !c.parent); // Top level normal (for "Productos" dropdown)
 
     return (
         <header className="w-full bg-white border-b relative z-50">
@@ -211,7 +225,14 @@ const Header = () => {
             <nav className="bg-gray-50 border-b hidden md:block">
                 <div className="w-full px-6 md:px-12">
                     <ul className="flex items-center gap-8 text-sm font-medium text-gray-700">
-                        {/* Dropdown 1 */}
+                        {/* Featured Categories (Top Level) */}
+                        {featuredCategories.map(cat => (
+                            <li key={cat.id} className="hover:text-blue-600 transition-colors">
+                                <Link href={`/categories/${cat.id}`}>{cat.name}</Link>
+                            </li>
+                        ))}
+
+                        {/* Dropdown for Products (Normal Categories) */}
                         <li className="relative group py-3">
                             <button className="flex items-center gap-1 hover:text-blue-600 transition-colors cursor-pointer">
                                 Productos
@@ -232,59 +253,31 @@ const Header = () => {
 
                             <div className="absolute left-0 top-full pt-2 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-1 z-50">
                                 <div className="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden p-2">
-                                    <Link href="#" className="block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 rounded-lg">
-                                        Tazas Personalizadas
-                                    </Link>
-                                    <Link href="#" className="block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 rounded-lg">
-                                        Remeras Estampadas
-                                    </Link>
-                                    <Link href="#" className="block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 rounded-lg">
-                                        Llaveros y Pins
-                                    </Link>
-                                    <Link href="#" className="block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 rounded-lg">
-                                        Papelería
-                                    </Link>
+                                    {productCategories.length > 0 ? (
+                                        productCategories.map(cat => (
+                                            <div key={cat.id}>
+                                                <Link href={`/categories/${cat.id}`} className="block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 rounded-lg font-medium">
+                                                    {cat.name}
+                                                </Link>
+                                                {/* Subcategories */}
+                                                {cat.children && cat.children.length > 0 && (
+                                                    <div className="pl-6">
+                                                        {cat.children.map(child => (
+                                                            <Link key={child.id} href={`/categories/${child.id}`} className="block px-4 py-1.5 text-sm text-gray-500 hover:text-blue-600 hover:bg-gray-50 rounded-md">
+                                                                {child.name}
+                                                            </Link>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="px-4 py-2 text-gray-400">Cargando...</div>
+                                    )}
                                 </div>
                             </div>
                         </li>
 
-                        {/* Dropdown 2 */}
-                        <li className="relative group py-3">
-                            <button className="flex items-center gap-1 hover:text-blue-600 transition-colors cursor-pointer">
-                                Ocasiones
-                                <svg
-                                    className="w-4 h-4 group-hover:rotate-180 transition-transform"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M19 9l-7 7-7-7"
-                                    ></path>
-                                </svg>
-                            </button>
-
-                            <div className="absolute left-0 top-full pt-2 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-1 z-50">
-                                <div className="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden p-2">
-                                    <Link href="#" className="block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 rounded-lg">
-                                        Cumpleaños
-                                    </Link>
-                                    <Link href="#" className="block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 rounded-lg">
-                                        Empresariales
-                                    </Link>
-                                    <Link href="#" className="block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 rounded-lg">
-                                        Fechas Especiales
-                                    </Link>
-                                </div>
-                            </div>
-                        </li>
-
-                        <li className="hover:text-blue-600 transition-colors">
-                            <Link href="#">Novedades</Link>
-                        </li>
                         <li className="hover:text-blue-600 transition-colors">
                             <Link href="#">Ofertas</Link>
                         </li>
@@ -298,19 +291,26 @@ const Header = () => {
             {/* Mobile Menu (Overlay) */}
             {isMenuOpen && (
                 <div className="md:hidden absolute top-full left-0 w-full bg-white border-b shadow-lg z-50">
-                    <nav className="flex flex-col p-4 bg-gray-50">
-                        <Link href="#" className="py-3 px-4 hover:bg-gray-100 rounded-lg font-medium text-gray-700">
-                            Productos
-                        </Link>
-                        <Link href="#" className="py-3 px-4 hover:bg-gray-100 rounded-lg font-medium text-gray-700">
-                            Ocasiones
-                        </Link>
-                        <Link href="#" className="py-3 px-4 hover:bg-gray-100 rounded-lg font-medium text-gray-700">
-                            Novedades
-                        </Link>
-                        <Link href="#" className="py-3 px-4 hover:bg-gray-100 rounded-lg font-medium text-gray-700">
-                            Ofertas
-                        </Link>
+                    <nav className="flex flex-col p-4 bg-gray-50 max-h-[80vh] overflow-y-auto">
+                        {featuredCategories.map(cat => (
+                            <Link key={cat.id} href={`/categories/${cat.id}`} className="py-3 px-4 hover:bg-gray-100 rounded-lg font-medium text-gray-700">
+                                {cat.name} (Destacado)
+                            </Link>
+                        ))}
+                        <div className="py-2 px-4 font-bold text-gray-400 text-xs uppercase tracking-wider">Productos</div>
+                        {productCategories.map(cat => (
+                            <div key={cat.id}>
+                                <Link href={`/categories/${cat.id}`} className="block py-2 px-4 hover:bg-gray-100 rounded-lg font-medium text-gray-700">
+                                    {cat.name}
+                                </Link>
+                                {cat.children && cat.children.map(child => (
+                                    <Link key={child.id} href={`/categories/${child.id}`} className="block py-2 pl-8 pr-4 text-sm text-gray-600 hover:text-blue-600">
+                                        {child.name}
+                                    </Link>
+                                ))}
+                            </div>
+                        ))}
+
                         <hr className="my-2 border-gray-200" />
                         <Link href="/login" className="py-3 px-4 hover:bg-gray-100 rounded-lg font-medium text-blue-600">
                             Iniciar Sesión

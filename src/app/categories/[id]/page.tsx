@@ -2,15 +2,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import productsData from '@/data/products.json';
-import categoriesData from '@/data/categories.json';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductsCard';
+import { fetchCategories, fetchProducts } from '@/services/api';
 
 // Generate static params for all categories (SSG)
 export async function generateStaticParams() {
-    return categoriesData.map((category) => ({
+    const categories = await fetchCategories();
+    return categories.map((category) => ({
         id: category.id.toString(),
     }));
 }
@@ -21,15 +21,17 @@ export default async function CategoryPage({
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
-    const category = categoriesData.find((c) => c.id.toString() === id);
+    const categories = await fetchCategories();
+    const category = categories.find((c) => c.id.toString() === id);
 
     if (!category) {
         notFound();
     }
 
     // Filter products by category
-    const categoryProducts = productsData.filter(
-        (p) => p.categoryId?.toString() === id
+    const allProducts = await fetchProducts();
+    const categoryProducts = allProducts.filter(
+        (p) => p.category?.id.toString() === id
     );
 
     return (
@@ -68,7 +70,16 @@ export default async function CategoryPage({
                     {categoryProducts.length > 0 ? (
                         <div className="px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {categoryProducts.map((product) => (
-                                <ProductCard key={product.id} {...product} />
+                                <ProductCard
+                                    key={product.id}
+                                    id={product.id}
+                                    slug={product.slug}
+                                    title={product.name}
+                                    description={product.description || ''}
+                                    price={product.price}
+                                    image={product.images && product.images.length > 0 ? product.images[0].url : '/taza.png'}
+                                    featured={product.isFeatured}
+                                />
                             ))}
                         </div>
                     ) : (
