@@ -26,30 +26,42 @@ export const metadata: Metadata = {
   description: "Impresiones mágicas"
 };
 
+import { ThemeProvider } from "@/components/ThemeProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} antialiased overflow-x-hidden`}
       >
-        <AuthProvider>
-          {children}
-          <Toaster
-            toastOptions={{
-              classNames: {
-                error: 'group-[.toaster]:!bg-white group-[.toaster]:!text-red-600 group-[.toaster]:!border-red-200 group-[.toaster]:!border-2 !shadow-lg',
-                success: 'group-[.toaster]:!bg-white group-[.toaster]:!text-green-600 group-[.toaster]:!border-green-200 group-[.toaster]:!border-2 !shadow-lg',
-                warning: 'group-[.toaster]:!bg-white group-[.toaster]:!text-yellow-600 group-[.toaster]:!border-yellow-200 group-[.toaster]:!border-2 !shadow-lg',
-                info: 'group-[.toaster]:!bg-white group-[.toaster]:!text-blue-600 group-[.toaster]:!border-blue-200 group-[.toaster]:!border-2 !shadow-lg',
-                description: '!text-black !text-opacity-100',
-              },
-            }}
-          />
-        </AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            {children}
+            <Toaster
+              theme="light"
+              richColors
+              position="top-right"
+              toastOptions={{
+                classNames: {
+                  error: 'group-[.toaster]:!text-red-600 group-[.toaster]:!border-red-200 group-[.toaster]:!border-2 !shadow-lg dark:group-[.toaster]:!border-red-900/50',
+                  success: 'group-[.toaster]:!text-emerald-600 group-[.toaster]:!border-emerald-200 group-[.toaster]:!border-2 !shadow-lg dark:group-[.toaster]:!border-emerald-900/50',
+                  warning: 'group-[.toaster]:!text-amber-600 group-[.toaster]:!border-amber-200 group-[.toaster]:!border-2 !shadow-lg dark:group-[.toaster]:!border-amber-900/50',
+                  info: 'group-[.toaster]:!text-blue-600 group-[.toaster]:!border-blue-200 group-[.toaster]:!border-2 !shadow-lg dark:group-[.toaster]:!border-blue-900/50',
+                  description: 'group-[.toaster]:!text-gray-600',
+                },
+              }}
+            />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

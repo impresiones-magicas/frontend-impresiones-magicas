@@ -34,7 +34,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             className="rounded-lg object-cover h-60 w-auto aspect-square mb-3 group-hover:opacity-90 transition-opacity"
           />
 
-          <h3 className="text-lg font-medium mb-1 group-hover:text-blue-600 transition-colors">{title}</h3>
+          <h3 className="text-lg font-medium mb-1 text-gray-900 group-hover:text-blue-600 transition-colors">{title}</h3>
         </Link>
         <p className="text-sm text-gray-500 mb-3 line-clamp-2">{description}</p>
 

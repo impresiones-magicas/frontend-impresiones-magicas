@@ -24,7 +24,8 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { LogOut, User as UserIcon, Package, AlertTriangle } from 'lucide-react';
-import { fetchCategories, Category } from '@/services/api';
+import { fetchCategories } from '@/services/api';
+import { Category } from '@/types';
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -64,7 +65,7 @@ const Header = () => {
                         <div className="relative w-full group">
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded-full py-3 pl-5 pr-12 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                className="w-full border border-gray-300 rounded-full py-3 pl-5 pr-12 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
                                 placeholder="¿Qué estás buscando hoy?"
                             />
                             <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors">
@@ -120,7 +121,7 @@ const Header = () => {
                                         </AvatarFallback>
                                     </Avatar>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-56">
+                                <DropdownMenuContent align="end" className="w-64 bg-white border border-gray-200 shadow-2xl z-[60] p-1.5 ring-1 ring-black/5 backdrop-blur-sm">
                                     <DropdownMenuLabel>
                                         <div className="flex flex-col space-y-1">
                                             <p className="text-sm font-medium leading-none">{user.name || "Usuario"}</p>
@@ -130,11 +131,11 @@ const Header = () => {
                                         </div>
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="cursor-pointer">
+                                    <DropdownMenuItem className="cursor-pointer transition-colors focus:bg-gray-100 py-2.5">
                                         <UserIcon className="mr-2 h-4 w-4" />
                                         <span>Perfil</span>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem className="cursor-pointer">
+                                    <DropdownMenuItem className="cursor-pointer transition-colors focus:bg-gray-100 py-2.5">
                                         <Package className="mr-2 h-4 w-4" />
                                         <span>Mis Pedidos</span>
                                     </DropdownMenuItem>
@@ -143,12 +144,12 @@ const Header = () => {
 
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
-                                            <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50" onSelect={(e) => e.preventDefault()}>
+                                            <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50 py-2.5" onSelect={(e) => e.preventDefault()}>
                                                 <LogOut className="mr-2 h-4 w-4" />
                                                 <span>Cerrar Sesión</span>
                                             </DropdownMenuItem>
                                         </AlertDialogTrigger>
-                                        <AlertDialogContent className="border-red-200">
+                                        <AlertDialogContent className="border-gray-200 bg-white">
                                             <AlertDialogHeader>
                                                 <AlertDialogTitle className="flex items-center gap-2 text-red-600">
                                                     <AlertTriangle className="h-5 w-5" />
@@ -222,9 +223,9 @@ const Header = () => {
             </div>
 
             {/* Bottom Nav (Desktop) */}
-            <nav className="bg-gray-50 border-b hidden md:block">
+            <nav className="bg-white/80 backdrop-blur-md border-b hidden md:block border-gray-100 sticky top-0">
                 <div className="w-full px-6 md:px-12">
-                    <ul className="flex items-center gap-8 text-sm font-medium text-gray-700">
+                    <ul className="flex items-center gap-8 text-sm font-medium text-gray-600">
                         {/* Featured Categories (Top Level) */}
                         {featuredCategories.map(cat => (
                             <li key={cat.id} className="hover:text-blue-600 transition-colors">
@@ -252,7 +253,7 @@ const Header = () => {
                             </button>
 
                             <div className="absolute left-0 top-full pt-2 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-1 z-50">
-                                <div className="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden p-2">
+                                <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden p-2">
                                     {productCategories.length > 0 ? (
                                         productCategories.map(cat => (
                                             <div key={cat.id}>
@@ -262,7 +263,7 @@ const Header = () => {
                                                 {/* Subcategories */}
                                                 {cat.children && cat.children.length > 0 && (
                                                     <div className="pl-6">
-                                                        {cat.children.map(child => (
+                                                        {cat.children.map((child: Category) => (
                                                             <Link key={child.id} href={`/categories/${child.id}`} className="block px-4 py-1.5 text-sm text-gray-500 hover:text-blue-600 hover:bg-gray-50 rounded-md">
                                                                 {child.name}
                                                             </Link>
@@ -291,7 +292,7 @@ const Header = () => {
             {/* Mobile Menu (Overlay) */}
             {isMenuOpen && (
                 <div className="md:hidden absolute top-full left-0 w-full bg-white border-b shadow-lg z-50">
-                    <nav className="flex flex-col p-4 bg-gray-50 max-h-[80vh] overflow-y-auto">
+                    <nav className="flex flex-col p-4 bg-white max-h-[80vh] overflow-y-auto">
                         {featuredCategories.map(cat => (
                             <Link key={cat.id} href={`/categories/${cat.id}`} className="py-3 px-4 hover:bg-gray-100 rounded-lg font-medium text-gray-700">
                                 {cat.name} (Destacado)
@@ -303,7 +304,7 @@ const Header = () => {
                                 <Link href={`/categories/${cat.id}`} className="block py-2 px-4 hover:bg-gray-100 rounded-lg font-medium text-gray-700">
                                     {cat.name}
                                 </Link>
-                                {cat.children && cat.children.map(child => (
+                                {cat.children && cat.children.map((child: Category) => (
                                     <Link key={child.id} href={`/categories/${child.id}`} className="block py-2 pl-8 pr-4 text-sm text-gray-600 hover:text-blue-600">
                                         {child.name}
                                     </Link>
@@ -327,7 +328,7 @@ const Header = () => {
                 <div className="relative w-full">
                     <input
                         type="text"
-                        className="w-full border border-gray-300 rounded-full py-2 pl-4 pr-10 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-gray-300 rounded-full py-2 pl-4 pr-10 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Buscar..."
                     />
                     <button className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer">

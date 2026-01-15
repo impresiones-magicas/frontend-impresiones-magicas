@@ -30,18 +30,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (storedToken && storedUser) {
             try {
+                const parsedUser = JSON.parse(storedUser);
+                if (storedToken === 'null' || !parsedUser) {
+                    throw new Error("Invalid session data");
+                }
                 setToken(storedToken);
-                setUser(JSON.parse(storedUser));
+                setUser(parsedUser);
             } catch (e) {
-                console.error("Failed to parse user from local storage", e);
+                console.error("Session integrity check failed", e);
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
+                setToken(null);
+                setUser(null);
             } finally {
                 setLoading(false);
             }
         } else {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
             setLoading(false);
         }
+
+        // Handle global unauthorized events
+        const handleUnauthorized = () => {
+            logout();
+        };
+
+        window.addEventListener('unauthorized', handleUnauthorized);
+        return () => window.removeEventListener('unauthorized', handleUnauthorized);
     }, []);
 
     const login = (newToken: string, newUser: User) => {

@@ -51,10 +51,10 @@ export function AuthLayout({
                     <h1 className="text-2xl font-bold text-gray-900 tracking-tight drop-shadow-sm">Impresiones Mágicas</h1>
                 </div>
 
-                <Card className="w-full max-w-md border-border bg-card/95 backdrop-blur-sm shadow-xl">
+                <Card className="w-full max-w-md border-gray-200 bg-white/95 backdrop-blur-sm shadow-xl">
                     <CardHeader className="space-y-1">
-                        <CardTitle className="text-2xl font-bold text-center text-card-foreground">{title}</CardTitle>
-                        <CardDescription className="text-center text-muted-foreground">
+                        <CardTitle className="text-2xl font-bold text-center text-gray-900">{title}</CardTitle>
+                        <CardDescription className="text-center text-gray-500">
                             {description}
                         </CardDescription>
                     </CardHeader>

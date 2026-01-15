@@ -99,9 +99,9 @@ export default function RegisterPage() {
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-foreground">Nombre Completo</FormLabel>
+                                <FormLabel className="text-gray-900">Nombre Completo</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Tu nombre" {...field} className="bg-background text-foreground" />
+                                    <Input placeholder="Tu nombre" {...field} className="bg-white text-gray-900 border-gray-200 focus-visible:ring-blue-500/50 focus-visible:border-blue-500" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -112,9 +112,9 @@ export default function RegisterPage() {
                         name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-foreground">Email</FormLabel>
+                                <FormLabel className="text-gray-900">Email</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="nombre@ejemplo.com" {...field} className="bg-background text-foreground" />
+                                    <Input placeholder="nombre@ejemplo.com" {...field} className="bg-white text-gray-900 border-gray-200 focus-visible:ring-blue-500/50 focus-visible:border-blue-500" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -125,9 +125,9 @@ export default function RegisterPage() {
                         name="pass"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-foreground">Contraseña</FormLabel>
+                                <FormLabel className="text-gray-900">Contraseña</FormLabel>
                                 <FormControl>
-                                    <Input type="password" placeholder="******" {...field} className="bg-background text-foreground" />
+                                    <Input type="password" placeholder="******" {...field} className="bg-white text-gray-900 border-gray-200 focus-visible:ring-blue-500/50 focus-visible:border-blue-500" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -138,15 +138,15 @@ export default function RegisterPage() {
                         name="confirmPass"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-foreground">Confirmar Contraseña</FormLabel>
+                                <FormLabel className="text-gray-900">Confirmar Contraseña</FormLabel>
                                 <FormControl>
-                                    <Input type="password" placeholder="******" {...field} className="bg-background text-foreground" />
+                                    <Input type="password" placeholder="******" {...field} className="bg-white text-gray-900 border-gray-200 focus-visible:ring-blue-500/50 focus-visible:border-blue-500" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className="w-full" disabled={isLoading}>
+                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={isLoading}>
                         {isLoading ? (
                             <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -157,14 +157,14 @@ export default function RegisterPage() {
                         )}
                     </Button>
 
-                    <div className="mt-4 text-center text-sm">
-                        <span className="text-muted-foreground">¿Ya tienes cuenta? </span>
-                        <Link href="/login" className="text-primary hover:underline font-medium">
+                    <div className="mt-6 text-center text-sm">
+                        <span className="text-gray-500">¿Ya tienes cuenta? </span>
+                        <Link href="/login" className="text-blue-600 hover:underline font-medium">
                             Inicia sesión
                         </Link>
                     </div>
                 </form>
             </Form>
-        </AuthLayout>
+        </AuthLayout >
     );
 }

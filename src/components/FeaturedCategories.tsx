@@ -2,21 +2,21 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import CategoryCard from './CategoryCard';
-import { fetchCategories, Category } from '@/services/api';
+import { fetchCategories } from '@/services/api';
+import { Category } from '@/types';
+import { getMediaUrl } from '@/services/media';
 
 const FeaturedCategories = () => {
     const [featuredCategories, setFeaturedCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
-    const [canScrollRight, setCanScrollRight] = useState(false); // Default to false until data loads
+    const [canScrollRight, setCanScrollRight] = useState(false);
 
     useEffect(() => {
         const loadCategories = async () => {
             try {
                 const data = await fetchCategories();
-                // Filter only featured categories that are top-level (if logic dictates) or just any featured
-                // Based on header logic, featured ones were top level. Let's stick to that or just isFeatured.
                 setFeaturedCategories(data.filter(c => c.isFeatured));
             } catch (error) {
                 console.error("Failed to load categories", error);
@@ -144,7 +144,7 @@ const FeaturedCategories = () => {
                                 id={category.id}
                                 name={category.name}
                                 description={category.description || ''}
-                                image={category.imageUrl || '/placeholder-category.png'} // Fallback
+                                image={getMediaUrl(category.imageUrl) || '/placeholder-category.png'}
                                 featured={category.isFeatured}
                             />
                         </div>

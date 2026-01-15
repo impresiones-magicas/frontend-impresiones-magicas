@@ -88,9 +88,9 @@ export default function LoginPage() {
                         name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-foreground">Email</FormLabel>
+                                <FormLabel className="text-gray-900">Email</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="nombre@ejemplo.com" {...field} className="bg-background text-foreground" />
+                                    <Input placeholder="nombre@ejemplo.com" {...field} className="bg-white text-gray-900 border-gray-300 focus-visible:ring-blue-500/50 focus-visible:border-blue-500" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -101,15 +101,15 @@ export default function LoginPage() {
                         name="pass"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-foreground">Contraseña</FormLabel>
+                                <FormLabel className="text-gray-900">Contraseña</FormLabel>
                                 <FormControl>
-                                    <Input type="password" placeholder="******" {...field} className="bg-background text-foreground" />
+                                    <Input type="password" placeholder="******" {...field} className="bg-white text-gray-900 border-gray-300 focus-visible:ring-blue-500/50 focus-visible:border-blue-500" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className="w-full" disabled={isLoading}>
+                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={isLoading}>
                         {isLoading ? (
                             <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -122,16 +122,16 @@ export default function LoginPage() {
 
                     <div className="relative my-4">
                         <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t border-border" />
+                            <span className="w-full border-t border-gray-200" />
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-card px-2 text-muted-foreground">
-                                O continuar con
+                            <span className="bg-white px-4 text-gray-400 font-bold tracking-widest leading-none py-1 rounded-full border border-gray-100 italic transition-transform duration-300 hover:scale-105">
+                                O CONTINUAR CON
                             </span>
                         </div>
                     </div>
 
-                    <Button variant="outline" type="button" className="w-full border-input bg-background/50 hover:bg-accent hover:text-accent-foreground" onClick={handleGoogleLogin}>
+                    <Button variant="outline" type="button" className="w-full border-gray-200 bg-white hover:bg-gray-50 text-gray-900" onClick={handleGoogleLogin}>
                         <svg
                             className="mr-2 h-4 w-4"
                             aria-hidden="true"
@@ -150,14 +150,14 @@ export default function LoginPage() {
                         Google
                     </Button>
 
-                    <div className="mt-4 text-center text-sm">
-                        <span className="text-muted-foreground">¿No tienes cuenta? </span>
-                        <Link href="/register" className="text-primary hover:underline font-medium">
+                    <div className="mt-6 text-center text-sm">
+                        <span className="text-gray-500">¿No tienes cuenta? </span>
+                        <Link href="/register" className="text-blue-600 hover:underline font-medium">
                             Regístrate
                         </Link>
                     </div>
                 </form>
             </Form>
-        </AuthLayout>
+        </AuthLayout >
     );
 }
