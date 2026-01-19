@@ -8,7 +8,7 @@ export function Spinner({ className = "w-24 h-24" }: SpinnerProps) {
     return (
         <svg
             className={className}
-            fill="hsl(228, 97%, 42%)"
+            fill="var(--brand-blue)"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
         >

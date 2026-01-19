@@ -35,7 +35,7 @@ export const authService = {
             password: data.pass,
             role: data.role
         };
-        const { data: user } = await api.post<User>('/users', payload);
+        const { data: user } = await api.post<User>('/auth/register', payload);
         return user;
     },
 };

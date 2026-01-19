@@ -46,7 +46,7 @@ const Header = () => {
     const productCategories = categories.filter(c => !c.isFeatured && !c.parent); // Top level normal (for "Productos" dropdown)
 
     return (
-        <header className="w-full bg-white border-b relative z-50">
+        <header className="w-full relative z-50 transition-colors" style={{ backgroundColor: 'white !important', color: 'var(--brand-text-primary) !important' }}>
             {/* Top Bar */}
             <div className="border-b">
                 <div className="w-full px-4 md:px-12 flex items-center justify-between py-4 gap-4 md:gap-8">
@@ -55,7 +55,7 @@ const Header = () => {
                         <div className="hidden md:flex w-10 h-10 bg-blue-600 rounded-full items-center justify-center text-white font-bold shrink-0">
                             IM
                         </div>
-                        <span className="font-bold text-lg md:text-xl text-gray-900 tracking-tight block">
+                        <span className="font-bold text-lg md:text-xl tracking-tight block" style={{ color: 'var(--brand-text-primary)' }}>
                             Impresiones Mágicas
                         </span>
                     </Link>
@@ -65,7 +65,8 @@ const Header = () => {
                         <div className="relative w-full group">
                             <input
                                 type="text"
-                                className="w-full border border-gray-300 rounded-full py-3 pl-5 pr-12 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                className="w-full border rounded-full py-3 pl-5 pr-12 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
+                                style={{ color: 'var(--brand-text-primary)', borderColor: 'var(--brand-border)' }}
                                 placeholder="¿Qué estás buscando hoy?"
                             />
                             <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors">
@@ -121,26 +122,26 @@ const Header = () => {
                                         </AvatarFallback>
                                     </Avatar>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-64 bg-white border border-gray-200 shadow-2xl z-[60] p-1.5 ring-1 ring-black/5 backdrop-blur-sm">
+                                <DropdownMenuContent align="end" className="w-64 border shadow-2xl z-[60] p-1.5 backdrop-blur-md" style={{ backgroundColor: 'var(--brand-dropdown-bg)', borderColor: 'var(--brand-border)', color: 'var(--brand-text-primary)' }}>
                                     <DropdownMenuLabel>
                                         <div className="flex flex-col space-y-1">
-                                            <p className="text-sm font-medium leading-none">{user.name || "Usuario"}</p>
-                                            <p className="text-xs leading-none text-muted-foreground font-normal">
+                                            <p className="text-sm font-semibold leading-none" style={{ color: 'var(--brand-text-primary)' }}>{user.name || "Usuario"}</p>
+                                            <p className="text-xs leading-none font-medium" style={{ color: 'var(--brand-text-secondary)' }}>
                                                 {user.email}
                                             </p>
                                         </div>
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="cursor-pointer transition-colors focus:bg-gray-100 py-2.5">
-                                        <UserIcon className="mr-2 h-4 w-4" />
+                                    <DropdownMenuItem className="cursor-pointer transition-colors focus:bg-gray-100 py-2.5" style={{ color: 'var(--brand-text-primary)' }}>
+                                        <UserIcon className="mr-2 h-4 w-4" style={{ color: 'var(--brand-text-secondary)' }} />
                                         <span>Perfil</span>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem className="cursor-pointer transition-colors focus:bg-gray-100 py-2.5">
-                                        <Package className="mr-2 h-4 w-4" />
+                                    <DropdownMenuItem className="cursor-pointer transition-colors focus:bg-gray-100 py-2.5" style={{ color: 'var(--brand-text-primary)' }}>
+                                        <Package className="mr-2 h-4 w-4" style={{ color: 'var(--brand-text-secondary)' }} />
                                         <span>Mis Pedidos</span>
                                     </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuSeparator />
+                                    <DropdownMenuSeparator style={{ backgroundColor: 'var(--brand-border)' }} />
+                                    <DropdownMenuSeparator style={{ backgroundColor: 'var(--brand-border)' }} />
 
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
@@ -155,7 +156,7 @@ const Header = () => {
                                                     <AlertTriangle className="h-5 w-5" />
                                                     ¿Cerrar sesión?
                                                 </AlertDialogTitle>
-                                                <AlertDialogDescription>
+                                                <AlertDialogDescription style={{ color: 'var(--brand-text-secondary)' }}>
                                                     ¿Estás seguro de que quieres cerrar tu sesión actual? Tendrás que volver a iniciar sesión para acceder a tu cuenta.
                                                 </AlertDialogDescription>
                                             </AlertDialogHeader>
@@ -294,14 +295,14 @@ const Header = () => {
                 <div className="md:hidden absolute top-full left-0 w-full bg-white border-b shadow-lg z-50">
                     <nav className="flex flex-col p-4 bg-white max-h-[80vh] overflow-y-auto">
                         {featuredCategories.map(cat => (
-                            <Link key={cat.id} href={`/categories/${cat.id}`} className="py-3 px-4 hover:bg-gray-100 rounded-lg font-medium text-gray-700">
+                            <Link key={cat.id} href={`/categories/${cat.id}`} className="py-3 px-4 hover:bg-gray-100 rounded-lg font-medium" style={{ color: 'var(--brand-text-primary)' }}>
                                 {cat.name} (Destacado)
                             </Link>
                         ))}
                         <div className="py-2 px-4 font-bold text-gray-400 text-xs uppercase tracking-wider">Productos</div>
                         {productCategories.map(cat => (
                             <div key={cat.id}>
-                                <Link href={`/categories/${cat.id}`} className="block py-2 px-4 hover:bg-gray-100 rounded-lg font-medium text-gray-700">
+                                <Link href={`/categories/${cat.id}`} className="block py-2 px-4 hover:bg-gray-100 rounded-lg font-medium" style={{ color: 'var(--brand-text-primary)' }}>
                                     {cat.name}
                                 </Link>
                                 {cat.children && cat.children.map((child: Category) => (
@@ -328,7 +329,8 @@ const Header = () => {
                 <div className="relative w-full">
                     <input
                         type="text"
-                        className="w-full border border-gray-300 rounded-full py-2 pl-4 pr-10 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border rounded-full py-2 pl-4 pr-10 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        style={{ color: 'var(--brand-text-primary)', borderColor: 'var(--brand-border)' }}
                         placeholder="Buscar..."
                     />
                     <button className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer">

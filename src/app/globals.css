@@ -1,6 +1,19 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+:root {
+  /* Public UI Brand Variables */
+  --brand-blue: #2563eb;
+  --brand-blue-hover: #1d4ed8;
+  --brand-bg-white: #ffffff;
+  --brand-text-primary: #111827;
+  --brand-text-secondary: #4b5563;
+  --brand-text-muted: #9ca3af;
+  --brand-border: #e5e7eb;
+  --brand-spinner-overlay: rgba(255, 255, 255, 0.8);
+  --brand-dropdown-bg: rgba(255, 255, 255, 0.95);
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {
@@ -102,6 +115,7 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 }
+
 
 .dark {
   --background: oklch(0 0 0);
