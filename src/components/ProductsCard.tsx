@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/utils';
+import { Star, StarHalf } from 'lucide-react';
 
 interface ProductCardProps {
   title: string;
@@ -65,21 +66,29 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Estrellas de valoración estilo Amazon */}
         <div className="flex items-center gap-1 mb-2">
           <div className="flex text-yellow-400">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <svg
-                key={i}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill={i < Math.floor(rating) ? "currentColor" : "none"}
-                stroke="currentColor"
-                strokeWidth="1.5"
-                className="w-5 h-5"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.545.044.77.77.326 1.163l-4.304 3.86a.562.562 0 00-.182.557l1.285 5.385a.562.562 0 01-.811.613L12 18.202l-4.605 2.682a.562.562 0 01-.811-.613l1.285-5.385a.562.562 0 00-.182-.557l-4.304-3.86a.562.562 0 01.326-1.163l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
-              </svg>
-            ))}
+            {Array.from({ length: 5 }).map((_, i) => {
+              const fullStar = rating >= i + 1;
+              const halfStar = !fullStar && rating >= i + 0.5;
+              
+              if (fullStar) {
+                return <Star key={i} className="w-4 h-4 fill-current" strokeWidth={1.5} />;
+              } else if (halfStar) {
+                return (
+                  <div key={i} className="relative">
+                    <Star className="w-4 h-4 text-gray-200" strokeWidth={1.5} />
+                    <div className="absolute inset-0 overflow-hidden w-[50%]">
+                      <Star className="w-4 h-4 fill-current text-yellow-400" strokeWidth={1.5} />
+                    </div>
+                  </div>
+                );
+              } else {
+                return <Star key={i} className="w-4 h-4 text-gray-200" strokeWidth={1.5} />;
+              }
+            })}
           </div>
-          <span className="text-xs text-blue-600 hover:underline cursor-pointer">{reviews}</span>
+          <span className="text-xs text-blue-600 hover:underline cursor-pointer">
+            {reviews}
+          </span>
         </div>
 
         <p className="text-gray-900 font-bold text-xl mb-4">

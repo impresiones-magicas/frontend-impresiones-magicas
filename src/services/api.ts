@@ -1,5 +1,6 @@
 import { config } from './config';
 import { Category, Product } from '@/types';
+export type { Category, Product };
 
 export const api = {
     get: async <T>(url: string): Promise<{ data: T }> => {

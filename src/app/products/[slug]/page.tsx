@@ -4,8 +4,12 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { fetchProduct, fetchProducts, Product } from '@/services/api';
+import { fetchProduct, fetchProducts } from '@/services/api';
+import { fetchProductStats } from '@/services/reviews';
+import { Product } from '@/types';
 import { formatPrice } from '@/lib/utils';
+import ProductReviews from '@/components/ProductReviews';
+import { Star, StarHalf } from 'lucide-react';
 
 // Generate static params for all products (SSG)
 export async function generateStaticParams() {
@@ -27,6 +31,9 @@ export default async function ProductPage({
     if (!product) {
         notFound();
     }
+
+    // Fetch rating stats
+    const stats = await fetchProductStats(product.id);
 
     // Find related products by category
     const allProducts = await fetchProducts();
@@ -82,26 +89,29 @@ export default async function ProductPage({
 
                             <div className="flex items-center gap-4 mb-6">
                                 <div className="flex text-yellow-400">
-                                    {Array.from({ length: 5 }).map((_, i) => (
-                                        <svg
-                                            key={i}
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill={i < 5 ? "currentColor" : "none"} // Static 5 star for now
-                                            stroke="currentColor"
-                                            strokeWidth="1.5"
-                                            className="w-5 h-5"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.545.044.77.77.326 1.163l-4.304 3.86a.562.562 0 00-.182.557l1.285 5.385a.562.562 0 01-.811.613L12 18.202l-4.605 2.682a.562.562 0 01-.811-.613l1.285-5.385a.562.562 0 00-.182-.557l-4.304-3.86a.562.562 0 01.326-1.163l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
-                                            />
-                                        </svg>
-                                    ))}
+                                    {Array.from({ length: 5 }).map((_, i) => {
+                                        const rating = stats.avgRating || 0;
+                                        const fullStar = rating >= i + 1;
+                                        const halfStar = !fullStar && rating >= i + 0.5;
+
+                                        if (fullStar) {
+                                            return <Star key={i} className="w-5 h-5 fill-current" strokeWidth={1.5} />;
+                                        } else if (halfStar) {
+                                            return (
+                                                <div key={i} className="relative">
+                                                    <Star className="w-5 h-5 text-gray-200" strokeWidth={1.5} />
+                                                    <div className="absolute inset-0 overflow-hidden w-[50%]">
+                                                        <Star className="w-5 h-5 fill-current text-yellow-400" strokeWidth={1.5} />
+                                                    </div>
+                                                </div>
+                                            );
+                                        } else {
+                                            return <Star key={i} className="w-5 h-5 text-gray-200" strokeWidth={1.5} />;
+                                        }
+                                    })}
                                 </div>
                                 <span className="text-sm text-gray-500">
-                                    (0 valoraciones)
+                                    ({stats.reviewCount} {stats.reviewCount === 1 ? 'valoración' : 'valoraciones'})
                                 </span>
                             </div>
 
@@ -166,6 +176,9 @@ export default async function ProductPage({
                             </div>
                         </div>
                     </div>
+
+                    {/* Integrated Reviews Section */}
+                    <ProductReviews productId={product.id} />
 
                     {/* Related Products */}
                     <section className="mt-20">

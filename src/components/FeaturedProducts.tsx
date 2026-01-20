@@ -51,8 +51,8 @@ const FeaturedProducts = () => {
                         price={product.price}
                         image={getMediaUrl(product.images?.[0]?.url) || '/taza.png'}
                         featured={product.isFeatured}
-                        rating={5} // Default rating for now
-                        reviews={0}
+                        rating={product.avgRating || 0}
+                        reviews={product.reviewCount || 0}
                     />
                 ))}
             </div>
