@@ -40,3 +40,17 @@ export interface Product {
     createdAt?: string;
     updatedAt?: string;
 }
+
+// Cart Types
+export interface CartItem {
+    id: string;
+    product: Product;
+    quantity: number;
+}
+
+export interface Cart {
+    id: string;
+    items: CartItem[];
+    createdAt: string;
+    updatedAt: string;
+}

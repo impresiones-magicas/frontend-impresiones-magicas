@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     DropdownMenu,
@@ -23,13 +24,14 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { LogOut, User as UserIcon, Package, AlertTriangle } from 'lucide-react';
+import { LogOut, User as UserIcon, Package, AlertTriangle, ShoppingCart } from 'lucide-react';
 import { fetchCategories } from '@/services/api';
 import { Category } from '@/types';
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { user, logout } = useAuth();
+    const { itemCount } = useCart();
     const [categories, setCategories] = useState<Category[]>([]);
 
     React.useEffect(() => {
@@ -90,25 +92,14 @@ const Header = () => {
 
                     {/* Auth Buttons */}
                     <div className="flex items-center gap-1 md:gap-4 shrink-0">
-                        <button className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors cursor-pointer">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                                ></path>
-                            </svg>
-                            <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-600 rounded-full">
-                                0
-                            </span>
-                        </button>
+                        <Link href="/cart" className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors cursor-pointer">
+                            <ShoppingCart className="h-6 w-6" />
+                            {itemCount > 0 && (
+                                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-600 rounded-full">
+                                    {itemCount}
+                                </span>
+                            )}
+                        </Link>
 
                         <div className="hidden md:block h-6 w-px bg-gray-200"></div>
 

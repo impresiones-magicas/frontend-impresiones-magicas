@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils';
 import { AdminModal } from '@/components/admin/AdminModal';
 import { toast } from 'sonner';
 import { getMediaUrl } from '@/services/media';
+import { formatPrice } from '@/lib/utils';
 
 export default function ProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -263,7 +264,7 @@ export default function ProductsPage() {
                                                 <span className="text-[10px] text-muted-foreground font-black truncate uppercase tracking-widest opacity-60">SKU: {product.id.split('-')[0]}</span>
                                                 {/* Mobile Info */}
                                                 <div className="md:hidden flex items-center gap-2 mt-1">
-                                                    <span className="text-[10px] font-black text-emerald-500">€{product.price}</span>
+                                                    <span className="text-[10px] font-black text-emerald-500">{formatPrice(product.price)}</span>
                                                     <span className="text-[10px] font-black text-muted-foreground/30">|</span>
                                                     <span className="text-[10px] font-black text-muted-foreground">{product.stock}U</span>
                                                 </div>
@@ -278,7 +279,7 @@ export default function ProductsPage() {
                                     </td>
                                     <td className="px-8 py-6">
                                         <div className="flex flex-col gap-2">
-                                            <span className="text-sm font-black text-foreground">{new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(product.price)}</span>
+                                            <span className="text-sm font-black text-foreground">{formatPrice(product.price)}</span>
                                             <div className="flex items-center gap-2">
                                                 <div className="flex-1 w-20 h-1 bg-accent rounded-full overflow-hidden">
                                                     <div
@@ -431,7 +432,7 @@ export default function ProductsPage() {
                                 <div>
                                     <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Precio Base</label>
                                     <div className="relative">
-                                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-emerald-500 font-black">€</span>
+                                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-emerald-500 font-black">{formatPrice(0).replace(/[0-9,\s.]/g, '')}</span>
                                         <input
                                             type="number" step="0.01" required
                                             value={formData.price} onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}

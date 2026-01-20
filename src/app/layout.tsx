@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/AuthContext";
+import { CartProvider } from "@/context/CartContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -45,21 +46,23 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            {children}
-            <Toaster
-              theme="light"
-              richColors
-              position="top-right"
-              toastOptions={{
-                classNames: {
-                  error: 'group-[.toaster]:!text-red-600 group-[.toaster]:!border-red-200 group-[.toaster]:!border-2 !shadow-lg dark:group-[.toaster]:!border-red-900/50',
-                  success: 'group-[.toaster]:!text-emerald-600 group-[.toaster]:!border-emerald-200 group-[.toaster]:!border-2 !shadow-lg dark:group-[.toaster]:!border-emerald-900/50',
-                  warning: 'group-[.toaster]:!text-amber-600 group-[.toaster]:!border-amber-200 group-[.toaster]:!border-2 !shadow-lg dark:group-[.toaster]:!border-amber-900/50',
-                  info: 'group-[.toaster]:!text-blue-600 group-[.toaster]:!border-blue-200 group-[.toaster]:!border-2 !shadow-lg dark:group-[.toaster]:!border-blue-900/50',
-                  description: 'group-[.toaster]:!text-gray-600',
-                },
-              }}
-            />
+            <CartProvider>
+              {children}
+              <Toaster
+                theme="light"
+                richColors
+                position="top-right"
+                toastOptions={{
+                  classNames: {
+                    error: 'group-[.toaster]:!text-red-600 group-[.toaster]:!border-red-200 group-[.toaster]:!border-2 !shadow-lg dark:group-[.toaster]:!border-red-900/50',
+                    success: 'group-[.toaster]:!text-emerald-600 group-[.toaster]:!border-emerald-200 group-[.toaster]:!border-2 !shadow-lg dark:group-[.toaster]:!border-emerald-900/50',
+                    warning: 'group-[.toaster]:!text-amber-600 group-[.toaster]:!border-amber-200 group-[.toaster]:!border-2 !shadow-lg dark:group-[.toaster]:!border-amber-900/50',
+                    info: 'group-[.toaster]:!text-blue-600 group-[.toaster]:!border-blue-200 group-[.toaster]:!border-2 !shadow-lg dark:group-[.toaster]:!border-blue-900/50',
+                    description: 'group-[.toaster]:!text-gray-600',
+                  },
+                }}
+              />
+            </CartProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

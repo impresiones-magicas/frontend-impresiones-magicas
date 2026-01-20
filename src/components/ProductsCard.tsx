@@ -1,6 +1,10 @@
+'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { useCart } from '@/context/CartContext';
+import { toast } from 'sonner';
+import { formatPrice } from '@/lib/utils';
 
 interface ProductCardProps {
   title: string;
@@ -24,6 +28,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
   id,
   slug
 }) => {
+  const { addToCart } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleAddToCart = async () => {
+    if (!id) return;
+    
+    setIsAdding(true);
+    try {
+      await addToCart(id.toString(), 1);
+      toast.success('Producto añadido al carrito', {
+        description: `${title} se ha añadido correctamente`,
+      });
+    } catch (error) {
+      toast.error('Error al añadir al carrito', {
+        description: 'Por favor, inténtalo de nuevo',
+      });
+    } finally {
+      setIsAdding(false);
+    }
+  };
   return (
     <article className="bg-white mb-4 border border-gray-200 rounded-xl p-4 w-full flex flex-col justify-between transition-transform hover:scale-105 duration-300">
       <div className="flex flex-col items-center text-center">
@@ -59,14 +83,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         <p className="text-gray-900 font-bold text-xl mb-4">
-          ${price}
+          {formatPrice(price)}
         </p>
       </div>
 
       {/* Botones de acción */}
       <div className="flex flex-col gap-2 w-full">
-        <button className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-medium py-2 px-4 rounded-full text-sm shadow-sm transition-colors cursor-pointer">
-          Añadir al carrito
+        <button 
+          onClick={handleAddToCart}
+          disabled={isAdding}
+          className="w-full bg-yellow-400 hover:bg-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed text-black font-medium py-2 px-4 rounded-full text-sm shadow-sm transition-colors cursor-pointer"
+        >
+          {isAdding ? 'Añadiendo...' : 'Añadir al carrito'}
         </button>
       </div>
     </article>
