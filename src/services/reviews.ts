@@ -10,6 +10,14 @@ export const createReview = async (productId: string, rating: number, comment: s
     return data;
 };
 
+export const updateReview = async (id: string, rating: number, comment: string): Promise<Review> => {
+    const { data } = await api.patch<Review>(`/reviews/${id}`, {
+        rating,
+        comment,
+    });
+    return data;
+};
+
 export const fetchProductReviews = async (productId: string): Promise<Review[]> => {
     const { data } = await api.get<Review[]>(`/reviews/product/${productId}`);
     return data;

@@ -49,6 +49,7 @@ export interface Review {
     comment: string;
     createdAt: string;
     user: {
+        id: string;
         name: string;
         avatarUrl?: string;
     };

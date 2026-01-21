@@ -13,13 +13,47 @@ import ProductReviews from '@/components/ProductReviews';
 import ProductActions from '@/components/ProductActions';
 import { Star, StarHalf } from 'lucide-react';
 
+// Generar metadatos dinámicos para SEO
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}) {
+    const { slug } = await params;
+    const product = await fetchProduct(slug);
+
+    if (!product) {
+        return {
+            title: 'Producto no encontrado | Impresiones Mágicas',
+        };
+    }
+
+    return {
+        title: `${product.name} | Impresiones Mágicas`,
+        description: product.description,
+        openGraph: {
+            title: product.name,
+            description: product.description,
+            images: [product.images?.[0]?.url || '/taza.png'],
+        },
+    };
+}
+
 // Generate static params for all products (SSG)
 export async function generateStaticParams() {
     const products = await fetchProducts();
-    // Return params for paths that have a slug or id (fallback)
-    return products.map((product) => ({
-        slug: product.slug || product.id,
-    }));
+    const paths: { slug: string }[] = [];
+
+    products.forEach((product) => {
+        // Añadimos el ID como ruta válida
+        paths.push({ slug: product.id });
+        // Si tiene slug, lo añadimos también (prioritario para SEO)
+        if (product.slug) {
+            paths.push({ slug: product.slug });
+        }
+    });
+
+    return paths;
 }
 
 export default async function ProductPage({
@@ -32,6 +66,13 @@ export default async function ProductPage({
 
     if (!product) {
         notFound();
+    }
+
+    // Si se abre por ID pero tiene un slug definido, redirigimos a la URL amigable (SEO)
+    // Esto asegura que siempre usemos el slug si está disponible.
+    if (slug === product.id && product.slug) {
+        const { redirect } = await import('next/navigation');
+        redirect(`/products/${product.slug}`);
     }
 
     // Fetch rating stats
@@ -48,7 +89,7 @@ export default async function ProductPage({
             <Header />
 
             <main className="flex-grow pt-4 pb-12 lg:pt-8 lg:pb-16">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-8xl mx-auto px-4 md:px-12">
                     {/* Breadcrumb */}
                     <nav className="text-sm mb-6 lg:mb-8 text-gray-500 overflow-x-auto whitespace-nowrap">
                         <Link href="/" className="hover:text-gray-900 transition-colors">

@@ -13,11 +13,24 @@ export const api = {
         const response = await fetch(`${config.apiUrl}${url}`, {
             headers,
         });
+
         if (response.status === 401) {
             window.dispatchEvent(new Event('unauthorized'));
-            throw new Error('API Error: 401 Unauthorized');
+            throw new Error('Sesión expirada. Por favor, inicia sesión de nuevo.');
         }
-        if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+
+        if (!response.ok) {
+            let errorMessage = `Error: ${response.status}`;
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorMessage;
+            } catch (e) {
+                // Si no es JSON o no tiene mensaje, usamos el texto de estado
+                errorMessage = response.statusText || errorMessage;
+            }
+            throw new Error(errorMessage);
+        }
+
         return { data: await response.json() };
     },
 
@@ -42,10 +55,25 @@ export const api = {
 
         if (response.status === 401) {
             window.dispatchEvent(new Event('unauthorized'));
-            throw new Error('API Error: 401 Unauthorized');
+            throw new Error('Sesión expirada. Por favor, inicia sesión de nuevo.');
         }
 
-        if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        if (!response.ok) {
+            let errorMessage = `Error: ${response.status}`;
+            try {
+                const errorData = await response.json();
+                // NestJS suele enviar el mensaje en errorData.message (string o array de strings)
+                if (Array.isArray(errorData.message)) {
+                    errorMessage = errorData.message.join(', ');
+                } else {
+                    errorMessage = errorData.message || errorMessage;
+                }
+            } catch (e) {
+                errorMessage = response.statusText || errorMessage;
+            }
+            throw new Error(errorMessage);
+        }
+
         return { data: await response.json() };
     },
 
@@ -70,10 +98,24 @@ export const api = {
 
         if (response.status === 401) {
             window.dispatchEvent(new Event('unauthorized'));
-            throw new Error('API Error: 401 Unauthorized');
+            throw new Error('Sesión expirada. Por favor, inicia sesión de nuevo.');
         }
 
-        if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        if (!response.ok) {
+            let errorMessage = `Error: ${response.status}`;
+            try {
+                const errorData = await response.json();
+                if (Array.isArray(errorData.message)) {
+                    errorMessage = errorData.message.join(', ');
+                } else {
+                    errorMessage = errorData.message || errorMessage;
+                }
+            } catch (e) {
+                errorMessage = response.statusText || errorMessage;
+            }
+            throw new Error(errorMessage);
+        }
+
         return { data: await response.json() };
     },
 
@@ -88,11 +130,23 @@ export const api = {
             method: 'DELETE',
             headers,
         });
+
         if (response.status === 401) {
             window.dispatchEvent(new Event('unauthorized'));
-            throw new Error('API Error: 401 Unauthorized');
+            throw new Error('Sesión expirada. Por favor, inicia sesión de nuevo.');
         }
-        if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+
+        if (!response.ok) {
+            let errorMessage = `Error: ${response.status}`;
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorMessage;
+            } catch (e) {
+                errorMessage = response.statusText || errorMessage;
+            }
+            throw new Error(errorMessage);
+        }
+
         return { data: await response.json() };
     }
 };
