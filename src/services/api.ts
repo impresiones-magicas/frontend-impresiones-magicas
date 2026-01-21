@@ -111,7 +111,8 @@ export const fetchProduct = async (term: string): Promise<Product | null> => {
     }
 };
 
-export const fetchProducts = async (): Promise<Product[]> => {
-    const { data } = await api.get<Product[]>('/products');
+export const fetchProducts = async (search?: string): Promise<Product[]> => {
+    const url = search ? `/products?search=${encodeURIComponent(search)}` : '/products';
+    const { data } = await api.get<Product[]>(url);
     return data;
 };

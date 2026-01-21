@@ -24,24 +24,58 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { LogOut, User as UserIcon, Package, AlertTriangle, ShoppingCart } from 'lucide-react';
-import { fetchCategories } from '@/services/api';
-import { Category } from '@/types';
+import { LogOut, User as UserIcon, Package, AlertTriangle, ShoppingCart, Search, Loader2 } from 'lucide-react';
+import { fetchCategories, fetchProducts } from '@/services/api';
+import { Category, Product } from '@/types';
+import { getMediaUrl } from '@/services/media';
+import { useRouter } from 'next/navigation';
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { user, logout } = useAuth();
     const { itemCount } = useCart();
     const [categories, setCategories] = useState<Category[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchResults, setSearchResults] = useState<Product[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showResults, setShowResults] = useState(false);
+    const router = useRouter();
 
     React.useEffect(() => {
         const loadCategories = async () => {
-            // Dynamically import to avoid server-side issues if any, or just standard import
             const data = await fetchCategories();
             setCategories(data);
         };
         loadCategories();
     }, []);
+
+    React.useEffect(() => {
+        const delayDebounceFn = setTimeout(async () => {
+            if (searchTerm.length > 2) {
+                setIsSearching(true);
+                try {
+                    const products = await fetchProducts(searchTerm);
+                    setSearchResults(products.slice(0, 5)); // Limit to 5 results
+                    setShowResults(true);
+                } catch (error) {
+                    console.error("Search error:", error);
+                } finally {
+                    setIsSearching(false);
+                }
+            } else {
+                setSearchResults([]);
+                setShowResults(false);
+            }
+        }, 300);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchTerm]);
+
+    const handleResultClick = (productId: string) => {
+        setSearchTerm('');
+        setShowResults(false);
+        router.push(`/products/${productId}`);
+    };
 
     // Filter featured and normal categories
     const featuredCategories = categories.filter(c => c.isFeatured && !c.parent); // Top level featured
@@ -63,31 +97,66 @@ const Header = () => {
                     </Link>
 
                     {/* Large Search Bar */}
-                    <div className="hidden md:flex flex-1 max-w-2xl justify-center mx-auto">
-                        <div className="relative w-full group">
+                    <div className="hidden md:flex flex-1 max-w-2xl justify-center mx-auto relative group">
+                        <div className="w-full relative">
                             <input
                                 type="text"
                                 className="w-full border rounded-full py-3 pl-5 pr-12 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
                                 style={{ color: 'var(--brand-text-primary)', borderColor: 'var(--brand-border)' }}
                                 placeholder="¿Qué estás buscando hoy?"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onFocus={() => searchTerm.length > 2 && setShowResults(true)}
+                                onBlur={() => setTimeout(() => setShowResults(false), 200)}
                             />
-                            <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                    ></path>
-                                </svg>
-                            </button>
+                            <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-2 rounded-full flex items-center justify-center">
+                                {isSearching ? (
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                ) : (
+                                    <Search className="h-5 w-5" />
+                                )}
+                            </div>
                         </div>
+
+                        {/* Search Results Dropdown */}
+                        {showResults && (
+                            <div className="absolute top-full left-0 w-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+                                {searchResults.length > 0 ? (
+                                    <div className="py-2">
+                                        {searchResults.map((product) => (
+                                            <button
+                                                key={product.id}
+                                                className="w-full flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition-colors text-left"
+                                                onClick={() => handleResultClick(product.id)}
+                                            >
+                                                <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                                                    <img
+                                                        src={getMediaUrl(product.images?.[0]?.url) || '/taza.png'}
+                                                        alt={product.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="text-sm font-semibold truncate" style={{ color: 'var(--brand-text-primary)' }}>
+                                                        {product.name}
+                                                    </h4>
+                                                    <p className="text-xs text-gray-500 truncate">
+                                                        {product.category?.name || 'Producto'}
+                                                    </p>
+                                                </div>
+                                                <div className="text-sm font-bold text-blue-600">
+                                                    {product.price}€
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="p-4 text-center text-gray-500 text-sm">
+                                        No se han encontrado resultados para "{searchTerm}"
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {/* Auth Buttons */}
@@ -316,31 +385,63 @@ const Header = () => {
             )}
 
             {/* Mobile Search (Visible only on small screens) */}
-            <div className="md:hidden border-b bg-white p-4">
+            <div className="md:hidden border-b bg-white p-4 relative">
                 <div className="relative w-full">
                     <input
                         type="text"
                         className="w-full border rounded-full py-2 pl-4 pr-10 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         style={{ color: 'var(--brand-text-primary)', borderColor: 'var(--brand-border)' }}
                         placeholder="Buscar..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onFocus={() => searchTerm.length > 2 && setShowResults(true)}
+                        onBlur={() => setTimeout(() => setShowResults(false), 200)}
                     />
-                    <button className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                            ></path>
-                        </svg>
-                    </button>
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">
+                        {isSearching ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                            <Search className="h-5 w-5" />
+                        )}
+                    </div>
                 </div>
+
+                {/* Mobile Search Results */}
+                {showResults && (
+                    <div className="absolute top-full left-0 w-full bg-white border-b shadow-2xl z-[100] max-h-[60vh] overflow-y-auto">
+                        {searchResults.length > 0 ? (
+                            <div className="py-2">
+                                {searchResults.map((product) => (
+                                    <button
+                                        key={product.id}
+                                        className="w-full flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition-colors text-left border-b border-gray-50 last:border-0"
+                                        onClick={() => handleResultClick(product.id)}
+                                    >
+                                        <div className="w-10 h-10 rounded overflow-hidden bg-gray-100 shrink-0">
+                                            <img
+                                                src={getMediaUrl(product.images?.[0]?.url) || '/taza.png'}
+                                                alt={product.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-sm font-semibold truncate">
+                                                {product.name}
+                                            </h4>
+                                            <p className="text-xs text-gray-500">
+                                                {product.price}€
+                                            </p>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="p-4 text-center text-gray-500 text-sm">
+                                No se encontraron resultados
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </header>
     );
