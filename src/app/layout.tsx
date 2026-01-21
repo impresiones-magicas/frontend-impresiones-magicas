@@ -51,7 +51,7 @@ export default function RootLayout({
               <Toaster
                 theme="light"
                 richColors
-                position="top-right"
+                position="bottom-right"
                 toastOptions={{
                   classNames: {
                     error: 'group-[.toaster]:!text-red-600 group-[.toaster]:!border-red-200 group-[.toaster]:!border-2 !shadow-lg dark:group-[.toaster]:!border-red-900/50',
