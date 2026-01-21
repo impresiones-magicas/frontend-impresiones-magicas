@@ -77,6 +77,19 @@ const Header = () => {
         router.push(`/products/${productId}`);
     };
 
+    const handleSearchSubmit = () => {
+        if (searchTerm.trim().length > 0) {
+            setShowResults(false);
+            router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleSearchSubmit();
+        }
+    };
+
     // Filter featured and normal categories
     const featuredCategories = categories.filter(c => c.isFeatured && !c.parent); // Top level featured
     const productCategories = categories.filter(c => !c.isFeatured && !c.parent); // Top level normal (for "Productos" dropdown)
@@ -106,16 +119,20 @@ const Header = () => {
                                 placeholder="¿Qué estás buscando hoy?"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
+                                onKeyDown={handleKeyDown}
                                 onFocus={() => searchTerm.length > 2 && setShowResults(true)}
                                 onBlur={() => setTimeout(() => setShowResults(false), 200)}
                             />
-                            <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-2 rounded-full flex items-center justify-center">
+                            <button 
+                                className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-2 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors cursor-pointer"
+                                onClick={handleSearchSubmit}
+                            >
                                 {isSearching ? (
                                     <Loader2 className="h-5 w-5 animate-spin" />
                                 ) : (
                                     <Search className="h-5 w-5" />
                                 )}
-                            </div>
+                            </button>
                         </div>
 
                         {/* Search Results Dropdown */}
@@ -394,16 +411,20 @@ const Header = () => {
                         placeholder="Buscar..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         onFocus={() => searchTerm.length > 2 && setShowResults(true)}
                         onBlur={() => setTimeout(() => setShowResults(false), 200)}
                     />
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">
+                    <button 
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                        onClick={handleSearchSubmit}
+                    >
                         {isSearching ? (
                             <Loader2 className="h-5 w-5 animate-spin" />
                         ) : (
                             <Search className="h-5 w-5" />
                         )}
-                    </div>
+                    </button>
                 </div>
 
                 {/* Mobile Search Results */}
