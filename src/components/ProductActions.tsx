@@ -18,13 +18,16 @@ const ProductActions: React.FC<ProductActionsProps> = ({ productId, productName 
   const handleAddToCart = async () => {
     setIsAdding(true);
     try {
+      console.log('Adding product to cart:', productId);
       await addToCart(productId, 1);
       toast.success('Producto añadido al carrito', {
         description: `${productName} se ha añadido correctamente`,
       });
     } catch (error) {
+      console.error('Error adding to cart:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
       toast.error('Error al añadir al carrito', {
-        description: 'Por favor, inténtalo de nuevo',
+        description: errorMessage,
       });
     } finally {
       setIsAdding(false);

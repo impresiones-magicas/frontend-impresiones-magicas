@@ -34,6 +34,7 @@ export interface Product {
     price: number;
     stock: number;
     isFeatured: boolean;
+    isCustomizable: boolean;
     images: ProductImage[];
     slug?: string;
     category?: Category;
@@ -41,6 +42,13 @@ export interface Product {
     reviewCount?: number;
     createdAt?: string;
     updatedAt?: string;
+}
+
+export interface Customization {
+    imageUrl: string;
+    imageDataUrl?: string; // Base64 for preview
+    position: { x: number; y: number };
+    scale: number;
 }
 
 export interface Review {
@@ -60,6 +68,7 @@ export interface CartItem {
     id: string;
     product: Product;
     quantity: number;
+    customization?: Customization;
 }
 
 export interface Cart {

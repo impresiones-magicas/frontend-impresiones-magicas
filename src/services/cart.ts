@@ -43,11 +43,13 @@ export const getCart = async (cartId: string): Promise<Cart> => {
 export const addItemToCart = async (
     cartId: string,
     productId: string,
-    quantity: number = 1
+    quantity: number = 1,
+    customization?: any
 ): Promise<Cart> => {
     const { data } = await api.post<Cart>(`/cart/${cartId}/items`, {
         productId,
         quantity,
+        customization,
     });
     return data;
 };
