@@ -13,13 +13,14 @@ import { fetchProducts } from '@/services/api';
 import { getMediaUrl } from '@/services/media';
 import { toast } from 'sonner';
 import { useCart } from '@/context/CartContext';
+import { getPrintArea } from '@/constants/print-areas';
 
 export default function CustomizePage() {
     const router = useRouter();
     const [products, setProducts] = useState<Product[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [customImage, setCustomImage] = useState<string | undefined>(undefined);
-    const [position, setPosition] = useState({ x: 100, y: 100 });
+    const [position, setPosition] = useState({ x: 35, y: 30 });
     const [scale, setScale] = useState(1);
     const [loading, setLoading] = useState(true);
     const { addToCart } = useCart();
@@ -49,14 +50,14 @@ export default function CustomizePage() {
 
     const handleImageUpload = (dataUrl: string) => {
         setCustomImage(dataUrl);
-        // Reset position when new image is uploaded
-        setPosition({ x: 100, y: 100 });
+        // Reset position when new image is uploaded (centered approximately)
+        setPosition({ x: 35, y: 30 });
         setScale(1);
     };
 
     const handleClearImage = () => {
         setCustomImage(undefined);
-        setPosition({ x: 100, y: 100 });
+        setPosition({ x: 35, y: 30 });
         setScale(1);
     };
 
@@ -175,6 +176,7 @@ export default function CustomizePage() {
                                     onProductSelect={setSelectedProduct}
                                     scale={scale}
                                     onScaleChange={setScale}
+                                    onPositionChange={setPosition}
                                     onReset={handleReset}
                                     hasCustomImage={!!customImage}
                                 />
@@ -193,6 +195,7 @@ export default function CustomizePage() {
                                     position={position}
                                     scale={scale}
                                     onPositionChange={setPosition}
+                                    printArea={selectedProduct ? getPrintArea(selectedProduct.name) : undefined}
                                 />
                             ) : (
                                 <div className="bg-white rounded-2xl p-12 shadow-lg border border-gray-200 text-center">

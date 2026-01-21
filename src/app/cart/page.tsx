@@ -8,6 +8,9 @@ import { toast } from 'sonner';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { formatPrice } from '@/lib/utils';
+import CartItemCustomizationPreview from '@/components/cart/CartItemCustomizationPreview';
+import { Customization, Product } from '@/types';
+import { X, Palette } from 'lucide-react';
 
 /**
  * Página del Carrito de Compras
@@ -22,6 +25,7 @@ import { formatPrice } from '@/lib/utils';
  */
 export default function CartPage() {
     const { cart, loading, removeFromCart, addToCart } = useCart();
+    const [previewItem, setPreviewItem] = React.useState<{ product: Product; customization: Customization } | null>(null);
 
     /**
      * Maneja la eliminación de un producto del carrito
@@ -42,9 +46,9 @@ export default function CartPage() {
     /**
      * Aumenta la cantidad de un producto en el carrito
      */
-    const handleIncreaseQuantity = async (productId: string, productName: string) => {
+    const handleIncreaseQuantity = async (productId: string, customization?: any) => {
         try {
-            await addToCart(productId, 1);
+            await addToCart(productId, 1, customization);
         } catch (error) {
             toast.error('Error al actualizar cantidad', {
                 description: 'Por favor, inténtalo de nuevo',
@@ -54,18 +58,17 @@ export default function CartPage() {
 
     /**
      * Disminuye la cantidad de un producto en el carrito
-     * Si la cantidad es 1, elimina el producto
+     * Si la cantidad es 1, devuelve el producto eliminándolo
      */
-    const handleDecreaseQuantity = async (itemId: string, productId: string, currentQuantity: number, productName: string) => {
+    const handleDecreaseQuantity = async (itemId: string, productId: string, currentQuantity: number, productName: string, customization?: any) => {
         if (currentQuantity === 1) {
             await handleRemoveItem(itemId, productName);
         } else {
             try {
-                // Para disminuir, agregamos -1 (cantidad negativa)
-                // Pero como el backend no soporta cantidades negativas,
-                // tenemos que eliminar y volver a agregar con la cantidad correcta
+                // Para disminuir, eliminamos el item actual y lo volvemos a agregar con cantidad - 1
+                // manteniendo la personalización
                 await removeFromCart(itemId);
-                await addToCart(productId, currentQuantity - 1);
+                await addToCart(productId, currentQuantity - 1, customization);
             } catch (error) {
                 toast.error('Error al actualizar cantidad', {
                     description: 'Por favor, inténtalo de nuevo',
@@ -178,6 +181,22 @@ export default function CartPage() {
                                                 >
                                                     {item.product.name}
                                                 </Link>
+                                                
+                                                {/* Badge de Personalización */}
+                                                {item.customization && (
+                                                    <div className="mt-2 flex items-center gap-2">
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                                                            <Palette className="w-3 h-3 mr-1" />
+                                                            Personalizado
+                                                        </span>
+                                                        <button 
+                                                            onClick={() => setPreviewItem({ product: item.product, customization: item.customization! })}
+                                                            className="text-xs text-blue-600 hover:text-blue-800 font-medium underline"
+                                                        >
+                                                            Ver diseño
+                                                        </button>
+                                                    </div>
+                                                )}
                                                 {item.product.description && (
                                                     <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                                                         {item.product.description}
@@ -193,7 +212,7 @@ export default function CartPage() {
                                                 {/* Control de Cantidad */}
                                                 <div className="flex items-center gap-3">
                                                     <button
-                                                        onClick={() => handleDecreaseQuantity(item.id, item.product.id, item.quantity, item.product.name)}
+                                                        onClick={() => handleDecreaseQuantity(item.id, item.product.id, item.quantity, item.product.name, item.customization)}
                                                         className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
                                                     >
                                                         <Minus className="h-4 w-4 text-gray-600" />
@@ -202,7 +221,7 @@ export default function CartPage() {
                                                         {item.quantity}
                                                     </span>
                                                     <button
-                                                        onClick={() => handleIncreaseQuantity(item.product.id, item.product.name)}
+                                                        onClick={() => handleIncreaseQuantity(item.product.id, item.customization)}
                                                         className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
                                                     >
                                                         <Plus className="h-4 w-4 text-gray-600" />
@@ -265,6 +284,46 @@ export default function CartPage() {
                     </div>
                 )}
             </main>
+
+            {/* Modal de Previsualización */}
+            {previewItem && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden relative animate-in zoom-in-95 duration-200">
+                        {/* Header del Modal */}
+                        <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                            <div>
+                                <h3 className="text-xl font-bold text-gray-900">Vista Previa del Diseño</h3>
+                                <p className="text-sm text-gray-500">{previewItem.product.name}</p>
+                            </div>
+                            <button 
+                                onClick={() => setPreviewItem(null)}
+                                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                            >
+                                <X className="h-6 w-6 text-gray-500" />
+                            </button>
+                        </div>
+
+                        {/* Contenido del Modal */}
+                        <div className="p-6 max-h-[70vh] overflow-y-auto">
+                            <CartItemCustomizationPreview 
+                                product={previewItem.product}
+                                customization={previewItem.customization}
+                            />
+                        </div>
+
+                        {/* Footer del Modal */}
+                        <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end">
+                            <button
+                                onClick={() => setPreviewItem(null)}
+                                className="px-6 py-2 bg-gray-900 text-white rounded-full font-semibold hover:bg-gray-800 transition-colors"
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <Footer />
         </div>
     );

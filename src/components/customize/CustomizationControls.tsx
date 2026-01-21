@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { RotateCcw, ZoomIn, ZoomOut } from 'lucide-react';
+import { RotateCcw, ZoomIn, ZoomOut, Layout } from 'lucide-react';
+import { PRESET_POSITIONS } from '@/constants/print-areas';
 import { Product } from '@/types';
 import { formatPrice } from '@/lib/utils';
 
@@ -12,6 +13,7 @@ interface CustomizationControlsProps {
     scale: number;
     onScaleChange: (scale: number) => void;
     onReset: () => void;
+    onPositionChange: (position: { x: number; y: number }) => void;
     hasCustomImage: boolean;
 }
 
@@ -22,6 +24,7 @@ export default function CustomizationControls({
     scale,
     onScaleChange,
     onReset,
+    onPositionChange,
     hasCustomImage,
 }: CustomizationControlsProps) {
     const handleScaleIncrease = () => {
@@ -100,6 +103,27 @@ export default function CustomizationControls({
                     </div>
                     <div className="mt-2 text-center">
                         <span className="text-sm text-gray-500">{Math.round(scale * 100)}%</span>
+                    </div>
+                </div>
+            )}
+
+            {/* Position Presets */}
+            {hasCustomImage && (
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                        <Layout className="w-4 h-4 text-blue-600" />
+                        Posiciones Rápidas
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                        {PRESET_POSITIONS.map((preset) => (
+                            <button
+                                key={preset.label}
+                                onClick={() => onPositionChange({ x: preset.x, y: preset.y })}
+                                className="px-3 py-2 text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all text-center"
+                            >
+                                {preset.label}
+                            </button>
+                        ))}
                     </div>
                 </div>
             )}
