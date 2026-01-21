@@ -8,7 +8,9 @@ import { fetchProduct, fetchProducts } from '@/services/api';
 import { fetchProductStats } from '@/services/reviews';
 import { Product } from '@/types';
 import { formatPrice } from '@/lib/utils';
+import { getMediaUrl } from '@/services/media';
 import ProductReviews from '@/components/ProductReviews';
+import ProductActions from '@/components/ProductActions';
 import { Star, StarHalf } from 'lucide-react';
 
 // Generate static params for all products (SSG)
@@ -74,7 +76,7 @@ export default async function ProductPage({
                             <div className="relative w-full aspect-square max-w-[300px] lg:max-w-md mx-auto">
                                 {/* Using standard img for simplicity matching original, ideally Next/Image */}
                                 <img
-                                    src={product.images && product.images.length > 0 ? product.images[0].url : '/taza.png'}
+                                    src={getMediaUrl(product.images?.[0]?.url) || '/taza.png'}
                                     alt={product.name}
                                     className="w-full h-full object-contain hover:scale-105 transition-transform duration-500"
                                 />
@@ -151,14 +153,7 @@ export default async function ProductPage({
                             )}
 
                             {/* Actions */}
-                            <div className="flex flex-col sm:flex-row gap-4 mb-10">
-                                <button className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-4 px-8 rounded-full shadow-lg transition-all transform hover:-translate-y-1 text-center cursor-pointer">
-                                    Añadir al Carrito
-                                </button>
-                                <button className="flex-1 bg-white border-2 border-gray-900 text-gray-900 font-bold py-4 px-8 rounded-full hover:bg-gray-900 hover:text-white transition-colors text-center cursor-pointer">
-                                    Comprar Ahora
-                                </button>
-                            </div>
+                            <ProductActions productId={product.id} productName={product.name} />
 
                             <div className="border-t pt-8">
                                 <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -189,7 +184,7 @@ export default async function ProductPage({
                             {relatedProducts.map((p) => (
                                 <Link href={`/products/${p.slug || p.id}`} key={p.id} className="group bg-white border border-gray-100 rounded-xl p-4 hover:shadow-lg transition-all duration-300 flex flex-col">
                                     <div className="aspect-square rounded-lg bg-gray-50 mb-4 overflow-hidden relative">
-                                        <img src={p.images && p.images.length > 0 ? p.images[0].url : '/taza.png'} alt={p.name} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500" />
+                                        <img src={getMediaUrl(p.images?.[0]?.url) || '/taza.png'} alt={p.name} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500" />
                                     </div>
                                     <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors mb-2">{p.name}</h3>
                                     <p className="font-bold text-gray-900 mt-auto">{formatPrice(p.price)}</p>

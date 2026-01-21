@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/utils';
+import { getMediaUrl } from '@/services/media';
 import { Star, StarHalf } from 'lucide-react';
 
 interface ProductCardProps {
@@ -54,7 +55,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className="flex flex-col items-center text-center">
         <Link href={`/products/${slug || id}`} className="w-full flex flex-col items-center group">
           <img
-            src={image}
+            src={getMediaUrl(image)}
             alt={title}
             className="rounded-lg object-cover h-60 w-auto aspect-square mb-3 group-hover:opacity-90 transition-opacity"
           />

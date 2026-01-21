@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductsCard';
 import { fetchCategories, fetchProducts } from '@/services/api';
+import { getMediaUrl } from '@/services/media';
 
 // Generate static params for all categories (SSG)
 export async function generateStaticParams() {
@@ -77,7 +78,7 @@ export default async function CategoryPage({
                                     title={product.name}
                                     description={product.description || ''}
                                     price={product.price}
-                                    image={product.images && product.images.length > 0 ? product.images[0].url : '/taza.png'}
+                                    image={getMediaUrl(product.images?.[0]?.url) || '/taza.png'}
                                     featured={product.isFeatured}
                                 />
                             ))}
