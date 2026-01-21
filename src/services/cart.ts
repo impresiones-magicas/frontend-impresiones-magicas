@@ -16,6 +16,14 @@ export const createCart = async (): Promise<Cart> => {
 };
 
 /**
+ * Obtiene el carrito del usuario autenticado
+ */
+export const getUserCart = async (): Promise<Cart> => {
+    const { data } = await api.get<Cart>('/cart/user');
+    return data;
+};
+
+/**
  * Obtiene un carrito existente por su ID
  * @param cartId - ID del carrito a obtener
  * @returns El carrito con todos sus items y productos

@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Cart, CartItem } from '@/types';
-import { getOrCreateCart, addItemToCart, removeItemFromCart } from '@/services/cart';
+import { getOrCreateCart, addItemToCart, removeItemFromCart, getUserCart } from '@/services/cart';
+import { useAuth } from './AuthContext';
 
 /**
  * Interfaz que define las funciones y datos disponibles en el CartContext
@@ -26,14 +27,15 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
     const [cart, setCart] = useState<Cart | null>(null);
     const [loading, setLoading] = useState(true);
+    const { user, isAuthenticated } = useAuth();
 
     /**
      * Carga el carrito al montar el componente
-     * Se ejecuta una sola vez cuando la aplicación inicia
+     * O cuando cambia el estado de autenticación
      */
     useEffect(() => {
         loadCart();
-    }, []);
+    }, [isAuthenticated]);
 
     /**
      * Carga o crea el carrito del usuario
@@ -41,10 +43,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const loadCart = async () => {
         try {
             setLoading(true);
-            const loadedCart = await getOrCreateCart();
-            setCart(loadedCart);
+            
+            // Si está autenticado, intentar cargar el carrito del usuario
+            if (isAuthenticated) {
+                const loadedCart = await getUserCart();
+                setCart(loadedCart);
+                // Guardamos el cartId por si acaso, aunque el backend lo asocia al usuario
+                localStorage.setItem('cartId', loadedCart.id);
+            } else {
+                // Si no está autenticado, usar el flujo normal de localStorage
+                const loadedCart = await getOrCreateCart();
+                setCart(loadedCart);
+            }
         } catch (error) {
             console.error('Error loading cart:', error);
+            // Si falla al cargar el carrito del usuario, intentamos crear uno nuevo
+            if (isAuthenticated) {
+                const newCart = await getOrCreateCart();
+                setCart(newCart);
+            }
         } finally {
             setLoading(false);
         }
