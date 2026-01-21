@@ -18,6 +18,10 @@ export const updateReview = async (id: string, rating: number, comment: string):
     return data;
 };
 
+export const deleteReview = async (id: string): Promise<void> => {
+    await api.delete(`/reviews/${id}`);
+};
+
 export const fetchProductReviews = async (productId: string): Promise<Review[]> => {
     const { data } = await api.get<Review[]>(`/reviews/product/${productId}`);
     return data;

@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Review } from '@/types';
-import { fetchProductReviews, createReview, updateReview } from '@/services/reviews';
-import { Star, MessageSquare, Send, Loader2, Pencil, X, Save } from 'lucide-react';
+import { fetchProductReviews, createReview, updateReview, deleteReview } from '@/services/reviews';
+import { Star, MessageSquare, Send, Loader2, Pencil, X, Save, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ProductReviewsProps {
@@ -28,6 +28,10 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
 
     // Form visibility state
     const [showForm, setShowForm] = useState(false);
+    
+    // Deletion modal state
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [reviewToDeleteId, setReviewToDeleteId] = useState<string | null>(null);
 
     useEffect(() => {
         loadReviews();
@@ -98,6 +102,29 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
             loadReviews();
         } catch (error: any) {
             toast.error(error.message || 'Error al actualizar la valoración');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleDelete = (reviewId: string, e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent triggering edit
+        setReviewToDeleteId(reviewId);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!reviewToDeleteId) return;
+
+        setSubmitting(true);
+        try {
+            await deleteReview(reviewToDeleteId);
+            toast.success('Valoración eliminada');
+            setShowDeleteModal(false);
+            setReviewToDeleteId(null);
+            loadReviews();
+        } catch (error: any) {
+            toast.error(error.message || 'Error al eliminar la valoración');
         } finally {
             setSubmitting(false);
         }
@@ -237,6 +264,50 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
                     </div>
                 )}
 
+                {/* Delete Confirmation Modal */}
+                {showDeleteModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+                        {/* Backdrop with blur effect */}
+                        <div 
+                            className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300"
+                            onClick={() => setShowDeleteModal(false)}
+                        ></div>
+                        
+                        {/* Modal Content Card */}
+                        <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden animate-in zoom-in-95 fade-in duration-300">
+                            {/* Modal Header */}
+                            <div className="flex flex-col items-center justify-center p-8">
+                                <div className="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mb-4">
+                                    <Trash2 className="w-8 h-8" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">¿Eliminar valoración?</h3>
+                                <p className="text-gray-500 text-center mb-8">
+                                    Esta acción no se puede deshacer. La valoración será eliminada permanentemente.
+                                </p>
+                                
+                                <div className="flex gap-3 w-full">
+                                    <button
+                                        onClick={confirmDelete}
+                                        disabled={submitting}
+                                        className="flex-grow bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Eliminar'}
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setShowDeleteModal(false);
+                                            setReviewToDeleteId(null);
+                                        }}
+                                        className="flex-grow px-6 py-3 border border-gray-200 text-gray-600 rounded-full font-bold hover:bg-gray-50 transition-colors"
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Review List */}
                 {reviews.length === 0 ? (
                     <div className="bg-gray-50 border border-gray-100 rounded-2xl p-8 text-center text-gray-500">
@@ -245,9 +316,17 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
                 ) : (
                     <div className="space-y-6">
                         {reviews.map((review) => (
-                            <div key={review.id} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                            <div 
+                                key={review.id} 
+                                onClick={() => user?.id === review.user.id && editingId !== review.id && handleStartEdit(review)}
+                                className={`bg-white rounded-2xl p-6 border border-gray-100 shadow-sm transition-all relative ${
+                                    user?.id === review.user.id && editingId !== review.id 
+                                        ? 'cursor-pointer hover:shadow-md hover:border-blue-100 group' 
+                                        : ''
+                                }`}
+                            >
                                 {editingId === review.id ? (
-                                    <form onSubmit={handleUpdate} className="space-y-4 bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
+                                    <form onClick={(e) => e.stopPropagation()} onSubmit={handleUpdate} className="space-y-4 bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
                                         <div className="flex items-center justify-between mb-2">
                                             <h4 className="font-bold text-blue-900">Editando tu opinión</h4>
                                             <button type="button" onClick={handleCancelEdit} className="text-gray-400 hover:text-gray-600">
@@ -305,6 +384,16 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
                                     </form>
                                 ) : (
                                     <>
+                                        {user?.id === review.user.id && (
+                                            <button
+                                                onClick={(e) => handleDelete(review.id, e)}
+                                                className="absolute top-6 right-6 p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                                                title="Borrar valoración"
+                                            >
+                                                <Trash2 className="w-5 h-5" />
+                                            </button>
+                                        )}
+                                        
                                         <div className="flex items-center gap-4 mb-4">
                                             <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">
                                                 {review.user.name.substring(0, 1).toUpperCase()}
@@ -313,13 +402,9 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
                                                 <div className="flex items-center gap-2">
                                                     <p className="font-bold text-gray-900">{review.user.name}</p>
                                                     {user?.id === review.user.id && (
-                                                        <button 
-                                                            onClick={() => handleStartEdit(review)}
-                                                            className="text-blue-600 hover:text-blue-700 p-1 rounded-md hover:bg-blue-50 transition-colors"
-                                                            title="Editar mi opinión"
-                                                        >
-                                                            <Pencil className="w-3.5 h-3.5" />
-                                                        </button>
+                                                        <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium uppercase tracking-wider">
+                                                            Tu opinión
+                                                        </span>
                                                     )}
                                                 </div>
                                                 <div className="flex text-yellow-400">
@@ -331,13 +416,20 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
                                                     ))}
                                                 </div>
                                             </div>
-                                            <span className="ml-auto text-xs text-gray-400">
+                                            <span className="ml-auto mr-12 text-xs text-gray-400">
                                                 {new Date(review.createdAt).toLocaleDateString()}
                                             </span>
                                         </div>
                                         <p className="text-gray-600 leading-relaxed italic">
                                             "{review.comment}"
                                         </p>
+                                        
+                                        {user?.id === review.user.id && (
+                                            <div className="mt-4 flex items-center gap-1 text-blue-600 text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <Pencil className="w-3 h-3" />
+                                                Click para editar
+                                            </div>
+                                        )}
                                     </>
                                 )}
                             </div>

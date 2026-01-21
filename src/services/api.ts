@@ -147,6 +147,11 @@ export const api = {
             throw new Error(errorMessage);
         }
 
+        // Manejar respuestas vacías (HTTP 204)
+        if (response.status === 204 || response.headers.get('content-length') === '0') {
+            return { data: null as unknown as T };
+        }
+
         return { data: await response.json() };
     }
 };
